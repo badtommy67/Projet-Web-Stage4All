@@ -1,0 +1,111 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Gestion des offres - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    <div class="conteneur-standard">
+        {% set permissions = session.utilisateur.permissions ?? [] %}
+
+        <h1 class="titre-page">Gestion des Offres</h1>
+        <h2 class="titre-notes">ajoutez, modifiez, consultez et supprimez des offres depuis cette page !</h2>
+
+        <form action="/gestion-offres" method="GET" class="barre-recherche" id="searchForm" onsubmit="Array.from(this.elements).forEach(el => { if(el.value === '') el.disabled = true; })">
+            <div class="groupe-recherche">
+                <label for="search">Rechercher</label>
+                <input type="text" id="search" name="titre_offre" placeholder="Titre, entreprise..." value="{{ recherche_nom ?? '' }}">
+            </div>
+            <div class="groupe-recherche">
+                <label for="where">Où ?</label>
+                <input type="text" id="where" name="ville_offre" placeholder="Ville, code postal..." autocomplete="off" value="{{ recherche_ville ?? '' }}">
+            </div>
+            <button type="submit" class="bouton bouton-recherche">Rechercher</button>
+        </form>
+
+        <div class="barre-filtres">
+            <div class="menu-filtres">
+                <select id="tri-select" name="tri_offre" class="selecteur-filtre" form="searchForm" onchange="this.form.requestSubmit()">
+                    <option value="" {% if recherche_tri == '' %}selected{% endif %}>Trier par</option>
+                    <option value="alpha" {% if recherche_tri == 'alpha' %}selected{% endif %}>Alphabétique (A -> Z)</option>
+                    <option value="croissant" {% if recherche_tri == 'croissant' %}selected{% endif %}>Date (ancienne -> récente)</option>
+                    <option value="decroissant" {% if recherche_tri == 'decroissant' %}selected{% endif %}>Date (récente -> ancienne)</option>
+                </select>
+            </div>
+
+            {% if 'SFx8 - Créer une offre' in permissions %}
+            <a href="/creer-offre" class="bouton">
+                <i class="fas fa-plus"></i> Créer une offre
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="liste-offres">
+            {% for offre in liste_offres %}
+            <article class="carte-offre card-offre-compact">
+                <div class="en-tete-offre">
+                    <h3>{{ offre.offre_titre }}</h3>
+                    <span class="offre-lieu">{{ offre.ville_nom }}</span>
+                </div>
+                <div class="ligne-bas-offre">
+                    <div class="infos-offre-detail">
+                        <span class="offre-entreprise-nom"><strong>{{ offre.entreprise_nom }}</strong></span>
+                        <span class="separateur-court">•</span>
+                        <span class="texte-duree-offre">{{ offre.offre_duree }} mois</span>
+                        <span class="separateur-court">•</span>
+                        <span class="reference-offre">{{ offre.offre_reference }}</span>
+                    </div>
+                    <div class="actions-offre">
+                        <a href="/detail-offre/{{ offre.offre_id }}" class="bouton-action voir" title="Voir"><i class="fas fa-eye"></i></a>
+                        
+                        {% if 'SFx9 - Modifier une offre' in permissions %}
+                        <a href="/modifier-offre/{{ offre.offre_id }}" class="bouton-action modifier" title="Modifier"><i class="fas fa-pen"></i></a>
+                        {% endif %}
+                        
+                        {% if 'SFx10 - Supprimer une offre' in permissions %}
+                        <a href="/supprimer-offre/{{ offre.offre_id }}" class="bouton-action supprimer" title="Supprimer"><i class="fas fa-trash"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        {% if nombre_total_pages > 1 %}
+        <div class="conteneur-pagination">
+            <div class="numeros-page">
+                {% if page_courante > 1 %}
+                    <a href="/gestion-offres?{{ parametres_url }}&page={{ page_courante - 1 }}" class="bouton-page page-precedente">Précédent</a>
+                {% else %}
+                    <span class="bouton-page page-precedente">Précédent</span>
+                {% endif %}
+
+                {% if page_debut > 1 %}
+                    <a href="/gestion-offres?{{ parametres_url }}&page=1" class="bouton-page">1</a>
+                    {% if page_debut > 2 %}
+                        <span class="bouton-page">…</span>
+                    {% endif %}
+                {% endif %}
+
+                {% for p in page_debut..page_fin %}
+                    <a href="/gestion-offres?{{ parametres_url }}&page={{ p }}" class="bouton-page {{ p == page_courante ? 'actif' : '' }}">{{ p }}</a>
+                {% endfor %}
+
+                {% if page_fin < nombre_total_pages %}
+                    {% if page_fin < nombre_total_pages - 1 %}
+                        <span class="bouton-page">…</span>
+                    {% endif %}
+                    <a href="/gestion-offres?{{ parametres_url }}&page={{ nombre_total_pages }}" class="bouton-page">{{ nombre_total_pages }}</a>
+                {% endif %}
+
+                {% if page_courante < nombre_total_pages %}
+                    <a href="/gestion-offres?{{ parametres_url }}&page={{ page_courante + 1 }}" class="bouton-page page-suivante">Suivant</a>
+                {% else %}
+                    <span class="bouton-page page-suivante">Suivant</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

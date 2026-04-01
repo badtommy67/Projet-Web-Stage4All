@@ -1,0 +1,30 @@
+User-agent: *
+
+# Autoriser l'indexation du contenu public
+Allow: /home
+Allow: /offres
+Allow: /entreprises
+Allow: /contact
+Allow: /mentions-legales
+
+# Interdire les routes de gestion (Admin/Pilote)
+# Même si elles sont protégées par mot de passe, on évite qu'elles apparaissent sur Google
+Disallow: /gestion-offres
+Disallow: /gestion-entreprises
+Disallow: /gestion-utilisateurs
+Disallow: /creer-*
+Disallow: /modifier-*
+Disallow: /supprimer-*
+Disallow: /suivi-eleves
+Disallow: /statistiques
+
+# Interdire les routes privées (Étudiant)
+Disallow: /profil
+Disallow: /mes-candidatures
+Disallow: /mes-favoris
+Disallow: /voir-cv
+Disallow: /evaluer-entreprise
+Disallow: /deconnexion
+
+# Lien vers le sitemap
+Sitemap: https://stage4all.local/sitemap.xml

@@ -1,0 +1,184 @@
+{% extends "base.twig.html" %} 
+
+{% block title %}Accueil - Stage4All{% endblock%}
+
+{% block content %}
+{% set permissions = session.utilisateur.permissions ?? [] %}
+
+<div class="carrousel-conteneur-principal">
+  <input type="radio" name="carrousel" id="diapo1" checked />
+  <input type="radio" name="carrousel" id="diapo2" />
+  <input type="radio" name="carrousel" id="diapo3" />
+
+  <div class="carrousel-liste-diapositives">
+    <div class="carrousel-diapositive">
+      <img src="{{ ASSETS_URL }}/images/carrousel/image1.jpg" alt="Image Bienvenue" />
+      <div class="contenu-sur-image">
+        <h1>Bienvenue sur Stage4All</h1>
+        <p>Trouvez le stage de vos rêves dès maintenant.</p>
+          <a href="/offres" class="bouton">Voir les offres</a>
+      </div>
+    </div>
+
+    <div class="carrousel-diapositive">
+      <img
+        src="https://cdn.pixabay.com/photo/2015/07/28/22/01/office-865091_1280.jpg"
+        alt="Travail sur pc"
+      />
+      <div class="contenu-sur-image">
+        <h2>Vous cherchez un stage ?</h2>
+        <p>
+          Trouvez le vôtre parmi notre large choix d'offres et d'entreprises.
+        </p>
+          <a href="/offres" class="bouton">Voir les offres</a>
+          <br><br>
+          <a href="/entreprises" class="bouton">Voir les entreprises</a>
+      </div>
+    </div>
+
+    <div class="carrousel-diapositive">
+      <img
+        src="https://cdn.pixabay.com/photo/2020/05/24/23/44/hands-5216585_1280.jpg"
+        alt="Check d'equipe"
+      />
+      <div class="contenu-sur-image">
+        <h2>Faites nous confiance !</h2>
+        <p>
+          Cliquez ci-dessous pour voir les entreprises qui nous font confiance.
+        </p>
+        <a href="#partenaires" class="bouton">Voir nos entreprises partenaires</a>
+      </div>
+    </div>
+  </div>
+
+  <label for="diapo3" class="fleche-navigation gauche fleche1">&#10094;</label>
+  <label for="diapo1" class="fleche-navigation gauche fleche2">&#10094;</label>
+  <label for="diapo2" class="fleche-navigation gauche fleche3">&#10094;</label>
+
+  <label for="diapo2" class="fleche-navigation droite fleche1">&#10095;</label>
+  <label for="diapo3" class="fleche-navigation droite fleche2">&#10095;</label>
+  <label for="diapo1" class="fleche-navigation droite fleche3">&#10095;</label>
+
+  <div class="carrousel-indicateurs">
+    <label for="diapo1" class="indicateur-point"></label>
+    <label for="diapo2" class="indicateur-point"></label>
+    <label for="diapo3" class="indicateur-point"></label>
+  </div>
+</div>
+
+<section class="fond-gris">
+  <div class="valeurs-conteneur">
+    <div class="valeur-carte">
+      <h3>Notre mission</h3>
+      <p>
+        Notre mission est de simplifier votre recherche de stage en centralisant
+        les meilleures opportunités du marché sur une plateforme unique.
+      </p>
+    </div>
+    <div class="valeur-carte">
+      <h3>Pourquoi nous choisir ?</h3>
+      <p>
+        Stage4All capitalise sur le réseau des anciennes promotions pour vous
+        donner accès à une base de données exclusive.
+      </p>
+    </div>
+    <div class="valeur-carte">
+      <h3>Nos engagements</h3>
+      <p>
+        Nous nous engageons à fournir des offres actualisées et à garantir la
+        fiabilité des informations transmises.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="fond-blanc" id="partenaires">
+  <div class="conteneur-standard">
+    <h2>Ils nous font confiance</h2>
+
+    {% set partenaires = [ 
+      {'nom': 'Cisco', 'logo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Cisco_logo.svg/1280px-Cisco_logo.svg.png'},
+      {'nom': 'CESI', 'logo': 'https://exiacesiarras.wordpress.com/wp-content/uploads/2013/02/exia-logo-2011.png'},
+      {'nom': 'CESI', 'logo': 'https://www.alsacetech.org/wp-content/uploads/2017/05/cesi_CMJN-e1673249263164.png'},
+      {'nom': 'MON TRAJET VERT', 'logo': 'https://www.cesi.fr/wp-content/uploads/2025/03/img_MTV_coul-1597x1600.png'},
+      {'nom': 'CESI LINEACT', 'logo': 'https://lineact.cesi.fr/wp-content/uploads/2022/11/cropped-LOGOTYPE_CESI_QUADRI_RVB_2.png'},
+      {'nom': 'ALSACE TECH', 'logo': 'https://www.alsacetech.org/wp-content/uploads/2022/09/Capture-logo-687x409.png'},
+      {'nom': 'CeA', 'logo': 'https://www.pagesjaunes.fr/media/newdam/preset-export-large/89/93/68/00/00/fd/ae/78/1e/a6/5fec8993680000fdae781ea6/5fec8993680000fdae781ea7.png'},
+      {'nom': 'Butagaz', 'logo': 'https://www.gaz-vert.org/wp-content/uploads/2019/03/butagaz-logo.png'},
+      {'nom': 'SNCF', 'logo': 'https://upload.wikimedia.org/wikipedia/fr/thumb/a/a1/Logo_SNCF_%282011%29.svg/500px-Logo_SNCF_%282011%29.svg.png'},
+      {'nom': 'Airbus', 'logo': 'https://upload.wikimedia.org/wikipedia/commons/2/24/Airbus_logo_2017.png'},
+      {'nom': 'Alstom', 'logo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Alstom_logo.svg/1280px-Alstom_logo.svg.png'},
+      {'nom': 'Auchan', 'logo': 'https://upload.wikimedia.org/wikipedia/fr/thumb/c/cd/Logo_Auchan_%282015%29.svg/1280px-Logo_Auchan_%282015%29.svg.png'}
+    ] %}
+
+    <div class="carousel-partenaires">
+      <div class="group">
+        {% for partenaire in partenaires %}
+        <div class="card">
+          <img src="{{ partenaire.logo }}" alt="{{ partenaire.nom }}" />
+        </div>
+        {% endfor %}
+      </div>
+
+      <div aria-hidden="true" class="group">
+        {% for partenaire in partenaires %}
+        <div class="card">
+          <img src="{{ partenaire.logo }}" alt="{{ partenaire.nom }}" />
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="fond-gris">
+  <div class="conteneur-standard">
+    <h2>Les dernières offres de stage</h2>
+    <div class="liste-offres">
+      {% if dernieres_offres is empty %}
+        <p class="texte-centre">Aucune offre disponible pour le moment.</p>
+      {% else %}
+        {% for offre in dernieres_offres %}
+        <article class="carte-offre">
+          
+          {% if 'SFx24 - Ajouter une offre à la wish-list' in permissions %}
+            {% if offre.offre_id in favoris_ids %}
+                <form method="POST" action="/wishlist-retirer">
+                    <input type="hidden" name="offre_id" value="{{ offre.offre_id }}">
+                    <button type="submit" class="bouton-favori favori-actif" aria-label="Retirer de la wish-list" title="Retirer">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+            {% else %}
+                <form method="POST" action="/wishlist-ajouter">
+                    <input type="hidden" name="offre_id" value="{{ offre.offre_id }}">
+                    <button type="submit" class="bouton-favori" aria-label="Ajouter à la wish-list" title="Ajouter">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+            {% endif %}
+          {% endif %}
+
+          <div class="en-tete-offre">
+            <h3>{{ offre.offre_titre }}</h3>
+            <span class="offre-lieu">{{ offre.ville_nom|default('Non renseigné') }}</span>
+          </div>
+
+          <div class="offre-duree">Stage • {{ offre.offre_duree }} mois</div>
+
+          <p class="offre-extrait">
+            {{ offre.offre_description|slice(0, 150) ~ '...' }}
+          </p>
+
+          <a href="/detail-offre/{{ offre.offre_id }}" class="lien-offre"></a>
+        </article>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

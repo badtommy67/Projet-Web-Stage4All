@@ -1,0 +1,58 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Détail candidature - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    <div class="conteneur-standard">
+        <h1 class="titre-page">Détail de la candidature</h1>
+
+            
+        <div class="infos-lettre">
+            <p><span>Nom et prénom de l'étudiant</span> {{ etudiant_nom|upper }} {{ etudiant_prenom }}</p>
+            <p><span>Titre de l'offre</span> 
+                <a href="/detail-offre/{{ offre_id }}">
+                    {{ offre_titre }}
+                </a>
+            </p>
+            <p><span>Nom de l'entreprise</span> 
+                <a href="/detail-entreprise/{{ entreprise_id }}">
+                    {{ entreprise_nom }}
+                </a>
+            </p>
+        </div>
+        <h2>Curriculum vitae</h2>
+        {% if fichier_existe == false %}
+            <div class="texte-centre"><p>Désolé, le fichier CV est physiquement introuvable sur le serveur.</p></div>
+            <br><br>
+            
+        {% elseif extension_cv == 'pdf' %}
+            <object data="/voir-cv?id={{ candidature_id }}" type="application/pdf" class="cv-frame">
+                <p>Votre navigateur ne supporte pas l'affichage PDF. 
+                <a href="/voir-cv?id={{ candidature_id }}">Télécharger le CV</a> pour le consulter.</p>
+            </object>
+        {% elseif extension_cv in ['doc', 'docx'] %}
+            <div class="cv-frame">
+                <p><i class="fas fa-file-word"></i> Ce CV est au format Word. Il ne peut pas être prévisualisé directement.</p>
+                <br>
+                <a href="/voir-cv?id={{ candidature_id }}" class="bouton">
+                    <i class="fas fa-download"></i> Télécharger le CV pour le consulter
+                </a>
+            </div>
+        {% else %}
+            <div class="texte-centre"><p>Désolé, il y a une erreur lors de la lecture du CV.</p></div>
+            <br><br>
+        {% endif %}
+        
+        <h2>Lettre de motivation</h2>
+        <div class="contenu-lettre" id="lettre-motivation">
+            {# Le filtre nl2br permet de transformer les sauts de ligne texte en balises <br> HTML #}
+            {{ lettre_motivation|nl2br }}
+        </div>
+
+        <a href="javascript:void(0)" onclick="window.close()" class="bouton-retour-formulaire">
+            <i class="fas fa-arrow-left"></i> Fermer l'onglet
+        </a>    
+    </div>
+</section>
+{% endblock %}

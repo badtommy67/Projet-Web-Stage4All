@@ -1,0 +1,125 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Créer une entreprise - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    {% if 'SFx3 - Créer une entreprise' in session.utilisateur.permissions %}
+        <h1 class="titre-page">Créer une entreprise</h1>
+        
+        <a href="/gestion-entreprises" class="bouton-retour-formulaire">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+        
+        <div class="conteneur-contact">
+            <form action="/creer-entreprise" method="POST" id="entrepriseForm" enctype="multipart/form-data">
+                
+                <h3>Informations générales</h3>
+                
+                <div class="groupe-formulaire">
+                    <label for="nom">Nom de l'entreprise <span class="requis">*</span></label>
+                    <input type="text" id="nom" name="nom" required placeholder="Ex : TechSolutions">
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="secteur">Secteur d'activité <span class="requis">*</span></label>
+                        <select id="secteur" name="secteur_id" required>
+                            <option value="" disabled selected>Choisir un secteur</option>
+                            {% for secteur in secteurs %}
+                                <option value="{{ secteur.secteur_id }}">{{ secteur.secteur_nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="site_web">Site web</label>
+                        <input type="url" id="site_web" name="site_web" placeholder="https://www.entreprise.fr">
+                    </div>
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="taille">Nombre de salariés (Taille) <span class="requis">*</span></label>
+                        <input type="number" id="taille" name="taille" required min="1" placeholder="Ex : 45">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="anciens_stagiaires">Anciens élèves ayant fait un stage <span class="requis">*</span></label>
+                        <input type="number" id="anciens_stagiaires" name="anciens_stagiaires" required min="0" placeholder="Ex : 2">
+                    </div>
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="code_postal">Code Postal <span class="requis">*</span></label>
+                        <input type="text" id="code_postal" name="code_postal" required placeholder="67000" maxlength="5" pattern="[0-9]{5}" data-ville-actuelle="{{ entreprise.ville_nom }}">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="ville_nom">Ville <span class="requis">*</span></label>
+                        <select id="ville_nom" name="ville_nom" required>
+                            <option value="" disabled selected>Entrez d'abord un code postal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3>Description</h3>
+
+                <div class="groupe-formulaire">
+                    <label for="extrait">Extrait de l'entreprise <span class="requis">*</span></label>
+                    <textarea id="extrait" name="extrait" required placeholder="Courte description de l'entreprise..."></textarea>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="description">Présentation de l'entreprise <span class="requis">*</span></label>
+                    <textarea id="description" name="description" required placeholder="Présentez l'entreprise, son activité, ses valeurs..."></textarea>
+                </div>
+
+                <h3>Contact</h3>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="email">Email de contact <span class="requis">*</span></label>
+                        <input type="email" id="email" name="email" required placeholder="contact@entreprise.fr">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="telephone">Téléphone <span class="requis">*</span></label>
+                        <input type="tel" id="telephone" name="telephone" required placeholder="03 88 12 34 56">
+                    </div>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="adresse">Adresse complète  <span class="requis">*</span></label>
+                    <input type="text" id="adresse" name="adresse" required placeholder="12 rue de la République">
+                </div>
+
+                <button type="submit" class="bouton bouton-formulaire">Créer l'entreprise</button>
+
+            </form>
+        </div>
+    {% else %}
+        <div class="conteneur-standard">
+            <p class="texte-centre">Vous n'avez pas les droits nécessaires pour créer une entreprise.</p>
+            <div class="texte-centre">
+                <a href="/home" class="bouton">Retour à l'accueil</a>
+            </div>
+        </div>
+    {% endif %}
+</section>
+
+<script>
+    const competencesExistantes = {
+        {% for competence in competences %}
+            "{{ competence.competence_libelle|lower }}": {{ competence.competence_id }},
+        {% endfor %}
+    };
+
+    const entreprisesMap = {
+        {% for entreprise in entreprises %}
+            "{{ entreprise.entreprise_nom|lower }}": {{ entreprise.entreprise_id }},
+        {% endfor %}
+    };
+</script>
+{% endblock %}

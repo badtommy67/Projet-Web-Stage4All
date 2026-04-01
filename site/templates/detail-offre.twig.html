@@ -1,0 +1,134 @@
+{% extends "base.twig.html" %} 
+
+{% block title %}{{ offre.offre_titre }} - Stage4All{% endblock %}
+
+{% block content %}
+{% set permissions = session.utilisateur.permissions ?? [] %}
+
+<section class="fond-blanc">
+    <div class="conteneur-standard page-detail-offre">
+        
+        <a href="/offres" class="bouton-retour-formulaire">
+            <i class="fas fa-arrow-left"></i> Retour aux offres
+        </a>
+
+        <div class="grille-detail-offre">
+
+            <div class="colonne-contenu-principal">
+                
+                <header class="bloc-entete-offre">
+                    <h1 class="titre-principal-poste">{{ offre.offre_titre }}</h1>                    
+                    <div class="ligne-infos-sous-titre">
+                        <span class="info-entreprise">
+                            <a href="/detail-entreprise?id={{ offre.entreprise_id }}">
+                                <strong>{{ offre.entreprise_nom }}</strong>
+                            </a>
+                        </span>
+                        <span class="info-ville">{{ offre.ville_nom }}</span>
+                        <span class="offre-duree">Stage • {{ offre.offre_duree }} mois</span>
+                    </div>
+                </header>
+
+                <div class="bloc-texte-description">
+                    <h2>À propos de l'entreprise</h2>
+                    <p>{{ offre.entreprise_presentation }}</p>
+
+                    <h2>Description du poste</h2>
+                    <p>{{ offre.offre_description }}</p>
+
+                    <h2>Missions</h2>
+                    <p>{{ offre.offre_missions }}</p>
+
+                    <h2>Profil recherché</h2>
+                    <p>{{ offre.offre_profil }}</p>
+
+                    <h2>Compétences recherchées</h2>
+                    {% if liste_competences is not empty %}
+                        <ul>
+                            {% for competence in liste_competences %}
+                                <li>{{ competence|lower|capitalize }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Aucune compétence associée à cette offre.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <aside class="colonne-sidebar-infos">
+                <div class="carte-resume-sidebar">
+                    <h2>Détails de l'offre</h2>
+                    
+                    <ul class="liste-infos-cles">
+                        <li class="item-liste">
+                            <span class="label-info">Date de début</span>
+                            <span class="valeur-info">{{ offre.offre_date_debut|date('d/m/Y') }}</span>
+                        </li>
+                        <li class="item-liste">
+                            <span class="label-info">Durée</span>
+                            <span class="valeur-info">{{ offre.offre_duree }} mois</span>
+                        </li>
+                        <li class="item-liste">
+                            <span class="label-info">Gratification</span>
+                            <span class="valeur-info">
+                                {% if offre.offre_remuneration %}
+                                    {{ offre.offre_remuneration }}€ / mois
+                                {% else %}
+                                    Non précisée
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li class="item-liste">
+                            <span class="label-info">Référence</span>
+                            <span class="valeur-info">{{ offre.offre_reference }}</span>
+                        </li>
+                        <li class="item-liste">
+                            <span class="label-info">Candidatures</span>
+                            <span class="valeur-info">{{ nb_candidatures|default(0) }}</span>
+                        </li>
+                    </ul>
+                    
+                    {% if 'SFx24 - Ajouter une offre à la wish-list' in permissions %}
+                        {% if offre.offre_id in favoris_ids %}
+                            <form method="POST" action="/wishlist-retirer" class="form-action-sidebar">
+                                <input type="hidden" name="offre_id" value="{{ offre.offre_id }}">
+                                <button type="submit" class="bouton bouton-postuler" title="Retirer des favoris">
+                                    <i class="fas fa-star"></i> Retirer des favoris
+                                </button>
+                            </form>
+                        {% else %}
+                            <form method="POST" action="/wishlist-ajouter" class="form-action-sidebar">
+                                <input type="hidden" name="offre_id" value="{{ offre.offre_id }}">
+                                <button type="submit" class="bouton bouton-postuler" title="Ajouter aux favoris">
+                                    <i class="far fa-star"></i> Ajouter aux favoris
+                                </button>
+                            </form>
+                        {% endif %}
+                        <br>
+                    {% endif %}
+                    
+                    {% if 'SFx20 - Postuler à une offre' in permissions %}
+                        <a href="/postuler/{{ offre.offre_id }}" class="bouton bouton-postuler">Postuler à cette offre</a>
+                        <br>
+                    {% elseif session.utilisateur is not defined %}
+                        <a href="/connexion" class="bouton">Se connecter pour postuler</a>
+                        <br>
+                    {% endif %}
+
+                    {% if 'SFx9 - Modifier une offre' in permissions %}
+                        <a href="/modifier-offre/{{ offre.offre_id }}" class="bouton bouton-postuler">Modifier l'offre</a>
+                        <br>
+                    {% endif %}
+                    
+                    {% if 'SFx10 - Supprimer une offre' in permissions %}
+                        <a href="/supprimer-offre/{{ offre.offre_id }}" class="bouton bouton-postuler">Supprimer l'offre</a>
+                    {% endif %}
+                </div>
+            </aside>
+
+        </div>
+
+    </div>
+</section>
+{% endblock %}

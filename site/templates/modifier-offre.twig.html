@@ -1,0 +1,192 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Modifier une offre - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    {% if 'SFx9 - Modifier une offre' in session.utilisateur.permissions %}
+        <h1 class="titre-page">Modifier l'offre</h1>
+
+        <a href="/gestion-offres" class="bouton-retour-formulaire">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+
+        <div class="conteneur-contact">
+            <form action="/modifier-offre/{{ offre.offre_id }}" method="POST" id="offreForm">
+                <h2>Édition de {{ offre.offre_titre }}</h2>
+                <h3>Informations générales</h3>
+
+                <div class="groupe-formulaire">
+                    <label for="titre">Titre du poste <span class="requis">*</span></label>
+                    <input type="text" id="titre" name="titre" required value="{{ offre.offre_titre }}">
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="entreprise_input">Entreprise <span class="requis">*</span></label>
+                        <input type="text" id="entreprise_input" value="{{ offre.entreprise_nom }}" placeholder="Tapez le nom d'une entreprise..." autocomplete="off" required>
+                        <datalist id="entreprises-list">
+                            {% for entreprise in entreprises %}
+                                <option value="{{ entreprise.entreprise_nom }}">
+                            {% endfor %}
+                        </datalist>
+                        <input type="hidden" name="entreprise_id" id="entreprise_id_hidden" value="{{ offre.entreprise_id }}">
+                    </div>
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="code_postal">Code Postal <span class="requis">*</span></label>
+                        <input type="text" id="code_postal" name="code_postal" required maxlength="5" pattern="[0-9]{5}" value="{{ offre.cp_code }}">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="ville_nom">Ville <span class="requis">*</span></label>
+                        <select id="ville_nom" name="ville_nom" required>
+                            <option value="">-- Sélectionnez une ville --</option>
+                            <option value="{{ offre.ville_nom }}" selected>{{ offre.ville_nom }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="duree">Durée (en mois) <span class="requis">*</span></label>
+                        <input type="number" id="duree" name="duree" required min="1" value="{{ offre.offre_duree }}">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="date_debut">Date de début <span class="requis">*</span></label>
+                        <input type="date" id="date_debut" name="date_debut" required value="{{ offre.offre_date_debut }}">
+                    </div>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="remuneration">Rémunération (€/mois)</label>
+                    <input type="number" id="remuneration" name="remuneration" min="0" step="0.01" value="{{ offre.offre_remuneration }}">
+                </div>
+
+                <h3>Description de l'offre</h3>
+
+                <div class="groupe-formulaire">
+                    <label for="description">Description du poste <span class="requis">*</span></label>
+                    <textarea id="description" name="description" required>{{ offre.offre_description }}</textarea>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="missions">Missions <span class="requis">*</span></label>
+                    <textarea id="missions" name="missions" required>{{ offre.offre_missions }}</textarea>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="profil">Profil recherché <span class="requis">*</span></label>
+                    <textarea id="profil" name="profil" required>{{ offre.offre_profil }}</textarea>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label>Compétences</label>
+                    <div id="competences-selectionnees" class="tags-container"></div>
+                    <input type="text" id="competence-input" placeholder="Tapez une compétence et appuyez sur Entrée..." list="competences-list">
+                    <datalist id="competences-list">
+                        {% for competence in competences %}
+                            <option value="{{ competence.competence_libelle }}">
+                        {% endfor %}
+                    </datalist>
+                    <input type="hidden" name="competences_ids" id="competences-ids-input">
+                    <input type="hidden" name="nouvelles_competences" id="nouvelles-competences-input">
+                    <small>Sélectionnez une compétence existante ou tapez-en une nouvelle, puis appuyez sur Entrée</small>
+                </div>
+
+                <button type="submit" class="bouton bouton-formulaire">Enregistrer les modifications</button>
+
+            </form>
+        </div>
+    {% else %}
+        <div class="conteneur-standard texte-centre">
+            <p>Accès refusé. Vous n'avez pas la permission de modifier cette offre.</p>
+            <a href="/profil" class="bouton">Retour au profil</a>
+        </div>
+    {% endif %}
+</section>
+
+<script>
+    const competencesExistantes = {
+        {% for competence in competences %}
+            "{{ competence.competence_libelle|lower|escape('js') }}": {{ competence.competence_id }},
+        {% endfor %}
+    };
+
+    const competencesInitiales = {{ competences_offre|json_encode|raw }};
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('competences-selectionnees');
+        const idsInput = document.getElementById('competences-ids-input');
+        const newCompInput = document.getElementById('nouvelles-competences-input');
+        const input = document.getElementById('competence-input');
+
+        let selectedIds = [];
+        let nouvellesCompetences = [];
+
+        function creerTag(libelle, type, id = null) {
+            const div = document.createElement('div');
+            div.classList.add('tag-competence'); // TA CLASSE CSS
+            div.innerHTML = `
+                ${libelle}
+                <button type="button">&times;</button>
+            `;
+            
+            div.querySelector('button').onclick = () => {
+                div.remove();
+                if (type === 'existant') {
+                    selectedIds = selectedIds.filter(sid => sid !== id);
+                    idsInput.value = selectedIds.join(',');
+                } else {
+                    nouvellesCompetences = nouvellesCompetences.filter(n => n !== libelle);
+                    newCompInput.value = nouvellesCompetences.join(',');
+                }
+            };
+
+            container.appendChild(div);
+        }
+
+        if (competencesInitiales) {
+            competencesInitiales.forEach(libelle => {
+                const libelleLower = libelle.toLowerCase();
+                if (competencesExistantes[libelleLower]) {
+                    const id = competencesExistantes[libelleLower];
+                    if (!selectedIds.includes(id)) {
+                        selectedIds.push(id);
+                        creerTag(libelle, 'existant', id);
+                    }
+                }
+            });
+            idsInput.value = selectedIds.join(',');
+        }
+
+        input.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const val = input.value.trim();
+                if (val === '') return;
+                const valLower = val.toLowerCase();
+
+                if (competencesExistantes[valLower]) {
+                    const id = competencesExistantes[valLower];
+                    if (!selectedIds.includes(id)) {
+                        selectedIds.push(id);
+                        creerTag(val, 'existant', id);
+                        idsInput.value = selectedIds.join(',');
+                    }
+                } else {
+                    if (!nouvellesCompetences.includes(val)) {
+                        nouvellesCompetences.push(val);
+                        creerTag(val, 'nouveau');
+                        newCompInput.value = nouvellesCompetences.join(',');
+                    }
+                }
+                input.value = '';
+            }
+        };
+    });
+</script>
+{% endblock %}

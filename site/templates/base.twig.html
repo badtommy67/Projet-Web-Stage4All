@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="{% block meta_description %}Stage4All, la plateforme de recherche de stages pour les étudiants CESI.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}stage, alternance, CESI, offres de stage{% endblock %}">
+
+    <title>{% block title %}Stage4All{% endblock %} — Stage4All</title>
+    <link rel="stylesheet" href="{{ ASSETS_URL }}/css/style.css" />
+    <link rel="icon" type="image/png" href="{{ ASSETS_URL }}/images/icon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="/manifest.json">
+    {% block stylesheets %}{% endblock %}
+  </head>
+  <body>
+    {% set permissions = session.utilisateur.permissions ?? [] %}
+    {% set est_connecte = session.utilisateur is defined and session.utilisateur is not null %}
+
+    <header class="en-tete-site">
+      <div class="conteneur-en-tete">
+        <div class="logo">
+          <a href="/home">
+            <img src="{{ ASSETS_URL }}/images/logo-stage4all.png" alt="Stage4all logo" />
+          </a>
+        </div>
+
+        <nav class="navigation-principale">
+          <ul>
+            <li>
+              <a href="/home" class="{% if current_uri == 'home' %}actif{% endif %}">Accueil</a>
+            </li>
+            
+            {% if not est_connecte or 'SFx7 - Rechercher et afficher une offre' in permissions %}
+            <li>
+              <a href="/offres" class="{% if current_uri == 'offres' %}actif{% endif %}">Offres</a>
+            </li>
+            {% endif %}
+
+            {% if not est_connecte or 'SFx2 - Rechercher et afficher une entreprise' in permissions %}
+            <li>
+              <a href="/entreprises" class="{% if current_uri == 'entreprises' %}actif{% endif %}">Entreprises</a>
+            </li>
+            {% endif %}
+
+            <li>
+              <a href="/contact" class="{% if current_uri == 'contact' %}actif{% endif %}">Contact</a>
+            </li>
+
+            <li class="mobile-cta">
+              {% if est_connecte %}
+                <a href="/profil" class="bouton">Mon profil - {{ session.utilisateur.prenom }}</a>
+              {% else %}
+                <a href="/connexion" class="bouton">Se connecter</a>
+              {% endif %}
+            </li>
+          </ul>
+        </nav>
+
+        <div class="header-cta">
+          {% if est_connecte %}
+            <a href="/profil" class="bouton">Mon profil - {{ session.utilisateur.prenom }}</a>
+          {% else %}
+            <a href="/connexion" class="bouton">Se connecter</a>
+          {% endif %}
+          
+          <div class="menu-burger" id="burger-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="flash-message" class="message-success" {% if not flash %}style="display:none"{% endif %}>
+    {{ flash }}
+</div>
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="pied-de-page-site">
+      <div class="conteneur-pied-de-page">
+        <div class="logo-pied-de-page">
+          <a href="/home">
+            <img src="{{ ASSETS_URL }}/images/logo-stage4all.png" alt="Logo Stage4All" />
+          </a>
+        </div>
+        <nav class="navigation-pied-de-page">
+          <ul>
+            <li><a href="/home">Accueil</a></li>
+            
+            {% if not est_connecte or 'SFx7 - Rechercher et afficher une offre' in permissions %}
+            <li><a href="/offres">Offres</a></li>
+            {% endif %}
+
+            {% if not est_connecte or 'SFx2 - Rechercher et afficher une entreprise' in permissions %}
+            <li><a href="/entreprises">Entreprises</a></li>
+            {% endif %}
+
+            <li><a href="/contact">Contact</a></li>
+
+            {% if not est_connecte or 'SFx11 - Consulter les statistiques des offres' in permissions %}
+            <li><a href="/statistiques">Statistiques</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+        <div class="mentions-legales-bas">
+          <a href="/mentions-legales">Mentions Légales</a>
+          <span class="copyright">© {{ "now"|date("Y") }} Stage4All. Tous droits réservés.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="{{ ASSETS_URL }}/js/script.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('PWA enregistrée !'))
+        .catch(err => console.log('Erreur PWA:', err));
+    });
+  }
+</script>
+  </body>
+</html>

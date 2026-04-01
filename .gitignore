@@ -1,0 +1,4 @@
+/site/vendor/
+/site/.env
+.env
+db.sh

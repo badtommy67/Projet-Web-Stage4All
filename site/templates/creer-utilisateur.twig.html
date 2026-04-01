@@ -1,0 +1,145 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Créer un utilisateur - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    <div class="conteneur-standard">
+        {% set permissions = session.utilisateur.permissions ?? [] %}
+
+        {% if "SFx13 - Créer un compte Pilote" in permissions or "SFx17 - Créer un compte Etudiant" in permissions %}
+            <h1 class="titre-page">Créer un utilisateur</h1>
+
+            <a href="/gestion-utilisateurs" class="bouton-retour-formulaire">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+
+            <div class="conteneur-connexion mode-inscription">
+
+                <form action="/creer-utilisateur" method="POST" id="registrationForm">
+
+                    <div class="ligne-formulaire">
+                        <div class="groupe-formulaire">
+                            <label for="prenom">Prénom <span class="requis">*</span></label>
+                            <input type="text" id="prenom" name="prenom" required placeholder="John">
+                        </div>
+                        <div class="groupe-formulaire">
+                            <label for="nom">Nom <span class="requis">*</span></label>
+                            <input type="text" id="nom" name="nom" required placeholder="Doe">
+                        </div>
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="email">Adresse mail <span class="requis">*</span></label>
+                        <input type="email" id="email" name="email" required placeholder="prenom.nom@viacesi.fr">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="role_id">Rôle <span class="requis">*</span></label>
+                        <select id="role_id" name="role_id" required>
+                            <option value="" disabled selected>Choisir un rôle</option>
+                            {% if "SFx13 - Créer un compte Pilote" in permissions %}
+                                <option value="2">Pilote</option>
+                            {% endif %}
+
+                            {% if "SFx17 - Créer un compte Etudiant" in permissions %}
+                                <option value="3">Etudiant</option>
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div class="ligne-formulaire">
+                        <div class="groupe-formulaire">
+                            <label for="campus_id">Campus <span class="requis">*</span></label>
+                            <select id="campus_id" name="campus_id">
+                                <option value="" disabled selected>Choisir...</option>
+                                {% for campus in liste_campus %}
+                                    <option value="{{ campus.campus_id }}">{{ campus.campus_nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="groupe-formulaire">
+                            <label for="promotion_id">Promotion <span class="requis">*</span></label>
+                            <select id="promotion_id" name="promotion_id">
+                                <option value="" disabled selected>Choisir...</option>
+                                {% for promotion in liste_promotions %}
+                                    <option value="{{ promotion.promotion_id }}">{{ promotion.promotion_nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="password">Mot de passe <span class="requis">*</span></label>
+                        <div class="enveloppe-mot-de-passe">
+                            <input type="password" id="password" name="password" placeholder="••••••••" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" required>
+                            <i class="fas fa-eye-slash bascule-mot-de-passe" onclick="togglePassword('password')"></i>
+                        </div>
+                        <small>Min. 8 caractères, 1 majuscule, 1 chiffre.</small>
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="confirm_password">Confirmation du mot de passe <span class="requis">*</span></label>
+                        <div class="enveloppe-mot-de-passe">
+                            <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                            <i class="fas fa-eye-slash bascule-mot-de-passe" onclick="togglePassword('confirm_password')"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="bouton bouton-formulaire">Créer le compte</button>
+
+                </form>
+            </div>
+        {% else %}
+            <div class="conteneur-connexion">
+                <p class="texte-centre">Accès restreint. Vous n'avez pas l'autorisation de créer des utilisateurs.</p>
+                <div class="texte-centre">
+                    <a href="/profil" class="bouton">Retour au profil</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+    const listeCompetences = {
+        {% for competence in competences %}
+            "{{ competence.competence_libelle|lower }}": {{ competence.competence_id }},
+        {% endfor %}
+    };
+
+    const cartographieEntreprises = {
+        {% for entreprise in entreprises %}
+            "{{ entreprise.entreprise_nom|lower }}": {{ entreprise.entreprise_id }},
+        {% endfor %}
+    };
+
+    {% set role_id_connecte = session.utilisateur.role_id ?? null %}
+    {% set campus_id_connecte = session.utilisateur.campus_id ?? null %}
+    {% set promotion_id_connecte = session.utilisateur.promotion_id ?? null %}
+    document.addEventListener('DOMContentLoaded', () => {
+
+        {% set permissions = session.utilisateur.permissions ?? [] %}
+        {% set est_pilote = 'SFx17 - Créer un compte Etudiant' in permissions and 'SFx13 - Créer un compte Pilote' not in permissions %}
+
+        {% if est_pilote %}
+
+            const selectRole = document.getElementById('role_id');
+            if (selectRole !== null) {
+                selectRole.value = '3';
+            }
+
+            const selectCampus = document.getElementById('campus_id');
+            if (selectCampus !== null) {
+                selectCampus.value = '{{ session.utilisateur.campus_id }}';
+            }
+
+            const selectPromotion = document.getElementById('promotion_id');
+            if (selectPromotion !== null) {
+                selectPromotion.value = '{{ session.utilisateur.promotion_id }}';
+            }
+
+        {% endif %}
+    });
+</script>
+{% endblock %}

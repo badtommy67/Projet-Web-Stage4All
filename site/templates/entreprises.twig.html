@@ -1,0 +1,124 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Entreprises - Stage4All{% endblock %}
+
+{% block content %}
+{% set permissions = session.utilisateur.permissions ?? [] %}
+{% set est_connecte = session.utilisateur is defined and session.utilisateur is not null %}
+
+<section class="fond-blanc">
+    {% if not est_connecte or 'SFx2 - Rechercher et afficher une entreprise' in permissions %}
+        <div class="conteneur-standard">
+            <h1 class="titre-page titre-normal">Trouver une entreprise</h1>
+
+            <form action="/entreprises" method="GET" class="barre-recherche" id="searchForm" onsubmit="Array.from(this.elements).forEach(el => { if(el.value === '') el.disabled = true; })">
+                <div class="groupe-recherche">
+                    <label for="what">Qui ?</label>
+                    <input type="text" id="what" name="nom_entreprise" placeholder="Nom de l'entreprise..." value="{{ recherche_nom }}">
+                </div>
+                <div class="groupe-recherche">
+                    <label for="where">Où ?</label>
+                    <input type="text" id="where" name="ville_entreprise" placeholder="Ville, code postal..." value="{{ recherche_ville }}">
+                </div>
+                <button type="submit" class="bouton bouton-recherche">Rechercher</button>
+            </form>
+
+            <div class="barre-filtres">
+                <div class="menu-filtres">
+                    <select class="selecteur-filtre" name="secteur_entreprise" form="searchForm" onchange="this.form.requestSubmit()">
+                        <option value="" {% if recherche_secteur == '' %}selected{% endif %}>Tous les domaines</option>
+                        {% for secteur in liste_secteurs %}
+                            <option value="{{ secteur.secteur_nom }}" {% if recherche_secteur == secteur.secteur_nom %}selected{% endif %}>
+                                {{ secteur.secteur_nom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <span class="compteur-filtres"><strong>{{ nombre_total_entreprises }}</strong> entreprise{{ nombre_total_entreprises > 1 ? 's' : '' }} trouvée{{ nombre_total_entreprises > 1 ? 's' : '' }}</span>
+            </div>
+
+            <div class="liste-entreprises">
+                {% for entreprise in liste_entreprises %}
+                    
+                    {% set nom_fichier = 'default.jpg' %}
+                    {% if entreprise.secteur_nom == 'Agroalimentaire' %}{% set nom_fichier = 'agroalimentaire.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Aéronautique - Automobile' %}{% set nom_fichier = 'aeronautique-automobile.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Banque - Assurance - Finance' %}{% set nom_fichier = 'banque-assurance-finance.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Commerce - Distribution' %}{% set nom_fichier = 'commerce-distribution.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Communication - Marketing - Médias' %}{% set nom_fichier = 'communication-marketing-medias.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Conseil - Ingénierie' %}{% set nom_fichier = 'conseil-ingenierie.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Construction - BTP' %}{% set nom_fichier = 'construction-btp.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Hôtellerie - Restauration - Tourisme' %}{% set nom_fichier = 'hotellerie-restauration-tourisme-resized.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Immobilier' %}{% set nom_fichier = 'immobilier-resized.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Industrie' %}{% set nom_fichier = 'industrie-resized.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Informatique - Numérique' %}{% set nom_fichier = 'informatique-numerique-resized.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Public - Administration - Associatif' %}{% set nom_fichier = 'public-administration-associatif.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Santé - Action sociale' %}{% set nom_fichier = 'sante-action-sociale-resized.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Transport - Logistique' %}{% set nom_fichier = 'transport-logistique.jpg' %}
+                    {% elseif entreprise.secteur_nom == 'Énergie - Environnement' %}{% set nom_fichier = 'energie-environnement-resized.jpg' %}
+                    {% endif %}
+
+                    <div class="carte-entreprise">
+                        <img src="{{ ASSETS_URL }}/images/domaines/{{ nom_fichier }}" alt="{{ entreprise.entreprise_nom }}" class="logo-entreprise">
+                        
+                        <div class="infos-entreprise">
+                            <h2 class="nom-entreprise">{{ entreprise.entreprise_nom }}</h2>
+                            <span class="badge-info">{{ entreprise.secteur_nom }}</span>
+                            {% if entreprise.moyenne_evaluation is defined and entreprise.moyenne_evaluation is not null %}
+                                <span class="badge-info">⭐ {{ entreprise.moyenne_evaluation|number_format(1) }}/5</span>
+                            {% endif %}
+                            <div class="bas-de-carte">
+                                <a href="/detail-entreprise/{{ entreprise.entreprise_id }}" class="bouton-decouvrir">Découvrir</a>
+                                <span class="nb-offres">{{ entreprise.nombre_offres|default(0) }} offre{{ (entreprise.nombre_offres|default(0)) > 1 ? 's' : '' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p>Aucune entreprise ne correspond à votre recherche.</p>
+                {% endfor %}
+            </div>
+
+            {% if nombre_total_pages > 1 %}
+            <div class="conteneur-pagination">
+                <div class="numeros-page">
+                    {% if page_courante > 1 %}
+                        <a href="/entreprises?{{ parametres_url }}&page={{ page_courante - 1 }}" class="bouton-page page-precedente">Précédent</a>
+                    {% else %}
+                        <span class="bouton-page page-precedente">Précédent</span>
+                    {% endif %}
+
+                    {% if page_debut > 1 %}
+                        <a href="/entreprises?{{ parametres_url }}&page=1" class="bouton-page">1</a>
+                        {% if page_debut > 2 %}
+                            <span class="bouton-page">…</span>
+                        {% endif %}
+                    {% endif %}
+
+                    {% for p in page_debut..page_fin %}
+                        <a href="/entreprises?{{ parametres_url }}&page={{ p }}" class="bouton-page {{ p == page_courante ? 'actif' : '' }}">{{ p }}</a>
+                    {% endfor %}
+
+                    {% if page_fin < nombre_total_pages %}
+                        {% if page_fin < nombre_total_pages - 1 %}
+                            <span class="bouton-page">…</span>
+                        {% endif %}
+                        <a href="/entreprises?{{ parametres_url }}&page={{ nombre_total_pages }}" class="bouton-page">{{ nombre_total_pages }}</a>
+                    {% endif %}
+
+                    {% if page_courante < nombre_total_pages %}
+                        <a href="/entreprises?{{ parametres_url }}&page={{ page_courante + 1 }}" class="bouton-page page-suivante">Suivant</a>
+                    {% else %}
+                        <span class="bouton-page page-suivante">Suivant</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="conteneur-standard texte-centre">
+            <p>Vous n'avez pas l'autorisation de consulter la liste des entreprises.</p>
+            <a href="/home" class="bouton">Retour à l'accueil</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

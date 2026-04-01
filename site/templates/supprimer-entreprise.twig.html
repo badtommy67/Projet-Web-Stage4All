@@ -1,0 +1,42 @@
+{% extends "base.twig.html" %} 
+
+{% block title %}Supprimer une entreprise - Stage4All{% endblock %} 
+
+{% block content %}
+<section class="fond-blanc">
+    {% set permissions = session.utilisateur.permissions ?? [] %}
+
+    {% if 'SFx6 - Supprimer une entreprise' in permissions %}
+        <h1 class="titre-page">Supprimer l'entreprise : {{ entreprise.entreprise_nom }}</h1>
+        
+        <div class="conteneur-contact">
+            
+            {% if nb_offres > 0 %}
+                <div class="groupe-formulaire">
+                    <h2>Attention !</h2>
+                    <p class="centre">Cette entreprise possède actuellement <strong>{{ nb_offres }} offre(s)</strong> de stage.</p>
+                    <p id="alerte" class="centre"><em>Cette entreprise sera archivée (et non supprimée définitivement) afin de conserver l'historique des candidatures associées.</em></p>
+                </div>
+            {% else %}
+                <div class="groupe-formulaire">
+                    <p>Cette entreprise n'a aucune offre associée. Elle sera supprimée définitivement.</p>
+                </div>
+            {% endif %}
+
+            <p>Êtes-vous sûr de vouloir continuer ?</p>
+
+            <form action="/supprimer-entreprise/{{ entreprise.entreprise_id }}" method="POST">
+                <button type="submit" class="bouton bouton-formulaire">Oui, confirmer</button>
+                <br><br>
+                <a href="/gestion-entreprises" class="bouton-retour-formulaire">Annuler et retourner à la liste</a>
+            </form>
+
+        </div>
+    {% else %}
+        <div class="conteneur-standard texte-centre">
+            <p>Accès refusé. Vous n'avez pas la permission de supprimer une entreprise.</p>
+            <a href="/profil" class="bouton">Retour au profil</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

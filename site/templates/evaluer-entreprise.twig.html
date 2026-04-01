@@ -1,0 +1,53 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Évaluer - {{ entreprise.entreprise_nom }}{% endblock %}
+
+{% block content %}
+{% set permissions = session.utilisateur.permissions ?? [] %}
+
+<section class="fond-blanc">
+    {% if 'SFx5 - Evaluer une entreprise' in permissions %}
+        <h1 class="titre-page">Évaluer une entreprise</h1>
+        <h2 class="titre-notes">Notez l'entreprise de 1 à 5 étoiles</h2>
+        <a href="/detail-entreprise/{{ entreprise.entreprise_id }}" class="bouton-retour-formulaire">
+            <i class="fas fa-arrow-left"></i> Retour à l'entreprise
+        </a>
+
+        <div class="conteneur-contact">
+            <form action="/traiter-notation" method="POST" id="evalForm">
+
+                <input type="hidden" name="entreprise_id" value="{{ entreprise.entreprise_id }}">
+
+                <h3>{{ entreprise.entreprise_nom }}</h3>
+
+                <div class="groupe-formulaire">
+                    <label>Note globale <span class="requis">*</span></label>
+                    <div class="etoiles">
+                        {% for i in 5..1 %}
+                            <input type="radio" name="note" id="etoile{{ i }}" value="{{ i }}" 
+                                required {% if note_existante == i %}checked{% endif %}>
+                            <label for="etoile{{ i }}"><i class="fas fa-star"></i></label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="bouton bouton-formulaire">
+                    {% if note_existante is not same as(false) %}
+                        Modifier l'évaluation
+                    {% else %}
+                        Envoyer l'évaluation
+                    {% endif %}
+                </button>
+
+            </form>
+        </div>
+    {% else %}
+        <div class="conteneur-standard">
+            <p class="texte-centre">Vous n'avez pas l'autorisation d'évaluer cette entreprise.</p>
+            <div class="texte-centre">
+                <a href="/home" class="bouton">Retour à l'accueil</a>
+            </div>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.twig.html" %}
+
+{% block title %}404 - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-gris">
+    <div class="conteneur-connexion">
+        <h1 class="titre-page">404</h1>
+
+        <p class="texte-introduction texte-centre">Oups ! Page introuvable.</p>
+
+        <div class="texte-centre">
+            <img src="{{ ASSETS_URL }}/images/Erreur404.png" width="80%" />
+        </div>
+
+        <div class="bas-de-formulaire-connexion">
+            <p>Cette page est partie chercher un stage ailleurs.</p>
+            <br />
+        </div>
+        
+        <a href="/home" class="bouton-retour-suppression">Retour à l'accueil</a>
+    </div>
+</section>
+{% endblock %}

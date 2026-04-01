@@ -1,0 +1,24 @@
+RewriteEngine On
+RewriteBase /
+
+#Empêcher le listage des dossiers et gérer l'index réel
+Options -Indexes
+DirectoryIndex index.php
+
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+#Page d'accueil par défaut
+RewriteRule ^$ index.php?uri=home [QSA,L]
+
+#Ne pas toucher aux fichiers réels (CSS, JS, Images)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+#Pages avec ID
+RewriteRule ^(offres|detail-offre|detail-entreprise|modifier-offre|modifier-entreprise|modifier-utilisateur|supprimer-offre|supprimer-entreprise|supprimer-utilisateur|postuler|evaluer-entreprise|detail-candidature|parametres_url)/([0-9]+)$ index.php?uri=$1&id=$2 [QSA,L]
+
+#Pages simples
+RewriteRule ^([^/]+)$ index.php?uri=$1 [QSA,L]

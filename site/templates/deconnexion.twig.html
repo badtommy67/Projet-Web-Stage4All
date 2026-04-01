@@ -1,0 +1,25 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Déconnexion - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    <div class="carte-succes-suppression">
+        <div class="cercle-icone">
+            <i class="fas fa-check"></i>
+        </div>
+
+        <h2>Déconnexion réussie !</h2>
+
+        <p>Vous avez bien été déconnecté de votre compte <strong>Stage4All</strong>.</p>
+
+        <p class="texte-redirection">Vous allez être redirigé vers la page de connexion...</p>
+
+        <a href="/connexion" class="bouton-retour-suppression">
+            Se reconnecter
+        </a>
+    </div>
+</section>
+
+<div id="redirect-auto"></div>
+{% endblock %}

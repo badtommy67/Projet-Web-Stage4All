@@ -1,0 +1,109 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Gestion des entreprises - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    <div class="conteneur-standard">
+        {% set permissions = session.utilisateur.permissions ?? [] %}
+
+        <h1 class="titre-page">Gestion des Entreprises</h1>
+        <h2 class="titre-notes">ajoutez, modifiez, consultez et supprimez des entreprises depuis cette page !</h2>
+
+        <form id="form-recherche" action="/gestion-entreprises" method="GET" class="barre-recherche" onsubmit="Array.from(this.elements).forEach(el => { if(el.value === '') el.disabled = true; })">
+            <div class="groupe-recherche">
+                <label for="search">Rechercher</label>
+                <input type="text" id="search" name="nom_entreprise" placeholder="Nom, secteur..." value="{{ recherche_nom ?? '' }}">
+            </div>
+            <div class="groupe-recherche">
+                <label for="where">Où ?</label>
+                <input type="text" id="where" name="ville_entreprise" placeholder="Ville, code postal..." autocomplete="off" value="{{ recherche_ville ?? '' }}">
+                <ul id="suggestions" class="liste-suggestions"></ul>
+            </div>
+            <button type="submit" class="bouton bouton-recherche">Rechercher</button>
+        </form>
+
+        <div class="barre-filtres">
+            <div class="menu-filtres">
+                <select id="tri-select" name="tri" class="selecteur-filtre" form="form-recherche" onchange="this.form.requestSubmit()">
+                    <option value="" {% if tri == '' %}selected{% endif %}>Trier par</option>
+                    <option value="alpha" {% if tri == 'alpha' %}selected{% endif %}>Alphabétique (A -> Z)</option>
+                    <option value="offres" {% if tri == 'offres' %}selected{% endif %}>Nombre d'offres</option>
+                    <option value="croissant" {% if tri == 'croissant' %}selected{% endif %}>Date d'ajout (ancienne -> récente)</option>
+                    <option value="decroissant" {% if tri == 'decroissant' %}selected{% endif %}>Date d'ajout (récente -> ancienne)</option>
+                </select>
+            </div>
+
+            {% if 'SFx3 - Créer une entreprise' in permissions %}
+            <a href="/creer-entreprise" class="bouton">
+                <i class="fas fa-plus"></i> Créer une entreprise
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="liste-offres">
+            {% for entreprise in liste_entreprises %}
+            <article class="carte-offre card-entreprise-compact">
+                <div class="en-tete-offre">
+                    <h3>{{ entreprise.entreprise_nom }}</h3>
+                    <span class="offre-lieu">{{ entreprise.ville_nom }}</span>
+                </div>
+                <div class="ligne-bas-entreprise">
+                    <div class="infos-entreprise-detail">
+                        <span class="compteur-offres-entreprise">{{ entreprise.nombre_offres }} offres actives</span>
+                    </div>
+                    <div class="actions-entreprise">
+                        <a href="/detail-entreprise/{{ entreprise.entreprise_id }}" class="bouton-action voir" title="Voir"><i class="fas fa-eye"></i></a>
+                        
+                        {% if 'SFx4 - Modifier une entreprise' in permissions %}
+                        <a href="/modifier-entreprise/{{ entreprise.entreprise_id }}" class="bouton-action modifier" title="Modifier"><i class="fas fa-pen"></i></a>
+                        {% endif %}
+                        
+                        {% if 'SFx6 - Supprimer une entreprise' in permissions %}
+                        <a href="/supprimer-entreprise/{{ entreprise.entreprise_id }}" class="bouton-action supprimer" title="Supprimer"><i class="fas fa-trash"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        {% if nombre_total_pages > 1 %}
+        <div class="conteneur-pagination">
+            <div class="numeros-page">
+                {% if page_courante > 1 %}
+                    <a href="/gestion-entreprises?{{ parametres_url }}&page={{ page_courante - 1 }}" class="bouton-page page-precedente">Précédent</a>
+                {% else %}
+                    <span class="bouton-page page-precedente">Précédent</span>
+                {% endif %}
+
+                {% if page_debut > 1 %}
+                    <a href="/gestion-entreprises?{{ parametres_url }}&page=1" class="bouton-page">1</a>
+                    {% if page_debut > 2 %}
+                        <span class="bouton-page">…</span>
+                    {% endif %}
+                {% endif %}
+
+                {% for p in page_debut..page_fin %}
+                    <a href="/gestion-entreprises?{{ parametres_url }}&page={{ p }}" class="bouton-page {{ p == page_courante ? 'actif' : '' }}">{{ p }}</a>
+                {% endfor %}
+
+                {% if page_fin < nombre_total_pages %}
+                    {% if page_fin < nombre_total_pages - 1 %}
+                        <span class="bouton-page">…</span>
+                    {% endif %}
+                    <a href="/gestion-entreprises?{{ parametres_url }}&page={{ nombre_total_pages }}" class="bouton-page">{{ nombre_total_pages }}</a>
+                {% endif %}
+
+                {% if page_courante < nombre_total_pages %}
+                    <a href="/gestion-entreprises?{{ parametres_url }}&page={{ page_courante + 1 }}" class="bouton-page page-suivante">Suivant</a>
+                {% else %}
+                    <span class="bouton-page page-suivante">Suivant</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

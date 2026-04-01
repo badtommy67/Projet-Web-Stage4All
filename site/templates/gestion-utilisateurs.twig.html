@@ -1,0 +1,126 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Gestion des utilisateurs - Stage4All{% endblock %}
+
+{% block content %}
+{% set permissions = session.utilisateur.permissions ?? [] %}
+
+<section class="fond-blanc">
+    <div class="conteneur-standard">
+        
+        <h1 class="titre-page">Gestion Utilisateurs</h1>
+        <h2 class="titre-notes">ajoutez, modifiez, consultez et supprimez des utilisateurs depuis cette page !</h2>
+
+        <form action="/gestion-utilisateurs" method="GET" class="barre-recherche" id="searchForm" onsubmit="Array.from(this.elements).forEach(el => { if(el.value === '') el.disabled = true; })">
+            <div class="groupe-recherche">
+                <label for="search">Rechercher</label>
+                <input type="text" id="search" name="nom" placeholder="Nom, email..." value="{{ recherche_nom }}">
+            </div>
+            <div class="groupe-recherche">
+                <label for="campus">Campus</label>
+                <input type="text" id="campus" name="campus" placeholder="Nom du campus" value="{{ recherche_campus }}">
+            </div>
+            <button type="submit" class="bouton bouton-recherche">Filtrer</button>
+        </form>
+
+        <div class="barre-filtres">
+            <div class="menu-filtres">
+                {% if 'SFx12 - Rechercher et afficher un compte Pilote' in permissions %}
+                <select class="selecteur-filtre" name="role" form="searchForm" onchange="this.form.requestSubmit()">
+                    <option value="" {% if recherche_role == '' %}selected{% endif %}>Tous les rôles</option>
+                    <option value="Administrateur" {% if recherche_role == 'Administrateur' %}selected{% endif %}>Administrateur</option>
+                    <option value="Pilote"         {% if recherche_role == 'Pilote' %}selected{% endif %}>Pilote</option>
+                    <option value="Étudiant"       {% if recherche_role == 'Étudiant' %}selected{% endif %}>Étudiant</option>
+                </select>
+                {% endif %}
+            </div>
+
+            {% if 'SFx13 - Créer un compte Pilote' in permissions or 'SFx17 - Créer un compte Etudiant' in permissions %}
+            <a href="/creer-utilisateur" class="bouton">
+                <i class="fas fa-plus"></i> Créer un utilisateur
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="liste-offres">
+            {% for utilisateur in liste_utilisateurs %}
+            <article class="carte-offre card-user-compact">
+                <div class="en-tete-offre">
+                    <h2>{{ utilisateur.utilisateur_prenom }} {{ utilisateur.utilisateur_nom|upper }}</h2>
+                    <span class="offre-lieu">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ utilisateur.campus_nom ?? 'Aucun campus' }}
+                    </span>
+                </div>
+
+                <div class="ligne-bas-utilisateur">
+                    <div class="infos-utilisateur-detail">
+                        <div class="offre-duree {{ (utilisateur.role_nom|lower == 'étudiant' or utilisateur.role_nom|lower == 'etudiant') ? 'badge-etudiant' : '' }}">
+                            {{ utilisateur.role_nom }}
+                        </div>
+
+                        {% if utilisateur.promotion_nom %}
+                            <span class="promo-utilisateur">Promo <strong>{{ utilisateur.promotion_nom }}</strong></span>
+                            <span class="separateur-court">•</span>
+                        {% endif %}
+
+                        <span class="user-email">
+                            <i class="fas fa-envelope"></i> {{ utilisateur.utilisateur_email }}
+                        </span>
+                    </div>
+
+                    <div class="actions-utilisateur">
+                        {% if 'SFx14 - Modifier un compte Pilote' in permissions or 'SFx18 - Modifier un compte Etudiant' in permissions %}
+                        <a href="/modifier-utilisateur/{{ utilisateur.utilisateur_id }}" class="bouton-action modifier" title="Modifier"><i class="fas fa-pen"></i></a>
+                        {% endif %}
+
+                        {% if 'SFx15 - Supprimer un compte Pilote' in permissions or 'SFx19 - Supprimer un compte Etudiant' in permissions %}
+                        <a href="/supprimer-utilisateur/{{ utilisateur.utilisateur_id }}" class="bouton-action supprimer" title="Supprimer"><i class="fas fa-trash"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% else %}
+                <p>Aucun utilisateur ne correspond à votre recherche.</p>
+            {% endfor %}
+        </div>
+
+        {% if nombre_total_pages > 1 %}
+        <div class="conteneur-pagination">
+            <div class="numeros-page">
+                {% if page_courante > 1 %}
+                    <a href="/gestion-utilisateurs?{{ parametres_url }}&page={{ page_courante - 1 }}" class="bouton-page page-precedente">Précédent</a>
+                {% else %}
+                    <span class="bouton-page page-precedente">Précédent</span>
+                {% endif %}
+
+                {% if page_debut > 1 %}
+                    <a href="/gestion-utilisateurs?{{ parametres_url }}&page=1" class="bouton-page">1</a>
+                    {% if page_debut > 2 %}
+                        <span class="bouton-page">…</span>
+                    {% endif %}
+                {% endif %}
+
+                {% for p in page_debut..page_fin %}
+                    <a href="/gestion-utilisateurs?{{ parametres_url }}&page={{ p }}" class="bouton-page {{ p == page_courante ? 'actif' : '' }}">{{ p }}</a>
+                {% endfor %}
+
+                {% if page_fin < nombre_total_pages %}
+                    {% if page_fin < nombre_total_pages - 1 %}
+                        <span class="bouton-page">…</span>
+                    {% endif %}
+                    <a href="/gestion-utilisateurs?{{ parametres_url }}&page={{ nombre_total_pages }}" class="bouton-page">{{ nombre_total_pages }}</a>
+                {% endif %}
+
+                {% if page_courante < nombre_total_pages %}
+                    <a href="/gestion-utilisateurs?{{ parametres_url }}&page={{ page_courante + 1 }}" class="bouton-page page-suivante">Suivant</a>
+                {% else %}
+                    <span class="bouton-page page-suivante">Suivant</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

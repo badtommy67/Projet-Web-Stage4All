@@ -1,0 +1,17 @@
+{
+"name": "alexissgl/stage4all",
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/",
+      "App\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "twig/twig": "^3.23",
+    "vlucas/phpdotenv": "^5.6",
+    "phpmailer/phpmailer": "^7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^12.5"
+  }
+}

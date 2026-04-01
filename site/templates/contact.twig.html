@@ -1,0 +1,48 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Contact - Stage4all{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    <h1 class="titre-page">NOUS CONTACTER</h1>
+    
+    <div class="conteneur-standard">
+        <div class="conteneur-contact">
+            <h2>Une question ? Parlons-en !</h2>
+
+            <form action="/contact" method="POST">
+                
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire moitie">
+                        <label for="prenom">Prénom<span class="requis">*</span></label>
+                        <input type="text" id="prenom" name="prenom" placeholder="John" required>
+                    </div>
+                    
+                    <div class="groupe-formulaire moitie">
+                        <label for="nom">Nom<span class="requis">*</span></label>
+                        <input type="text" id="nom" name="nom" placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="email">Adresse E-mail<span class="requis">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="Votre adresse E-mail" required>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="sujet">Sujet<span class="requis">*</span></label>
+                    <input type="text" id="sujet" name="sujet" placeholder="Sujet" required>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="message">Message<span class="requis">*</span></label>
+                    <textarea id="message" name="message" placeholder="Message" required></textarea>
+                </div>
+
+                <button type="submit" class="bouton bouton-formulaire">Envoyer</button>
+
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

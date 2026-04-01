@@ -1,0 +1,149 @@
+{% extends "base.twig.html" %} 
+
+{% block title %}{{ entreprise.entreprise_nom }} - Stage4All{% endblock %}
+
+{% block content %}
+{% set permissions = session.utilisateur.permissions ?? [] %}
+
+<section class="fond-blanc">
+  <div class="conteneur-standard page-detail-offre">
+    <a href="/entreprises" class="bouton-retour-formulaire">
+      <i class="fas fa-arrow-left"></i> Retour à la liste
+    </a>
+
+    <div class="grille-detail-offre">
+      
+      <div class="colonne-contenu-principal">
+        
+        <header class="bloc-entete-offre">
+          <div class="entete-entreprise">
+            <img src="https://placehold.jp/50/90x90/5a189a/ffffff?text={{ entreprise.entreprise_nom|slice(0, 2)|upper }}" alt="Logo {{ entreprise.entreprise_nom }}" class="logo-entreprise-detail">
+
+            <div class="contenu-texte">
+              <h1 class="titre-principal-poste">
+                {{ entreprise.entreprise_nom }}
+              </h1>
+
+              <div class="ligne-infos-sous-titre">
+                <span class="info-ville">{{ entreprise.ville_nom }}</span>
+                <span>•</span>
+                <span>{{ entreprise.secteur_nom }}</span>
+                {% if entreprise.moyenne_evaluation is defined and entreprise.moyenne_evaluation is not null %}
+                  <span>•</span>
+                  <span>⭐ {{ entreprise.moyenne_evaluation|number_format(1) }}/5</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="logo-spacer"></div>
+          </div>
+        </header>
+
+        <div class="bloc-texte-description">
+          <h2>Qui sommes-nous ?</h2>
+          <p>{{ entreprise.entreprise_presentation }}</p>
+
+          {% if liste_offres is not empty %}
+            <h2>Nos offres de stage</h2>
+            <ul>
+              {% for offre in liste_offres %}
+                <li>
+                  <a href="/detail-offre?id={{ offre.offre_id }}">{{ offre.offre_titre }}</a> — {{ offre.ville_nom }} • {{ offre.offre_duree }} mois{% if offre.offre_remuneration %} • {{ offre.offre_remuneration }}€/mois {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          {% if entreprise.moyenne_evaluation is defined and entreprise.moyenne_evaluation is not null %}
+            <h2>Évaluations</h2>
+            <p>Moyenne : ⭐ {{ entreprise.moyenne_evaluation|number_format(1) }}/5 ({{ entreprise.nombre_avis }} avis)</p>
+          {% endif %}
+            <h2>Notre localisation</h2>
+            <iframe
+              class="carte-google"
+              loading="lazy"
+              allowfullscreen
+              src="{{ map_url }}">
+            </iframe>
+        </div>
+      
+      </div>
+
+      <aside class="colonne-sidebar-infos">
+        <div class="carte-resume-sidebar">
+          
+          <h2>Informations Société</h2>
+
+          <ul class="liste-infos-cles">
+            {% if entreprise.entreprise_siteweb %}
+              <li class="item-liste">
+                <span class="label-info">Site Web</span>
+                <span class="valeur-info">
+                  <a href="{{ entreprise.entreprise_siteweb }}" target="_blank">{{ entreprise.entreprise_siteweb }}</a>
+                </span>
+              </li>
+            {% endif %}
+
+            <li class="item-liste">
+              <span class="label-info">Domaine</span>
+              <span class="valeur-info">{{ entreprise.secteur_nom }}</span>
+            </li>
+
+            {% if entreprise.entreprise_taille %}
+              <li class="item-liste">
+                <span class="label-info">Effectif</span>
+                <span class="valeur-info">{{ entreprise.entreprise_taille }} collaborateurs</span>
+              </li>
+            {% endif %}
+
+            {% if entreprise.entreprise_telephone %}
+              <li class="item-liste">
+                <span class="label-info">Téléphone</span>
+                <span class="valeur-info">{{ entreprise.entreprise_telephone }}</span>
+              </li>
+            {% endif %}
+
+            <li class="item-liste">
+              <span class="label-info">Email</span>
+              <span class="valeur-info">
+                <a href="mailto:{{ entreprise.entreprise_email }}">{{ entreprise.entreprise_email }}</a>
+              </span>
+            </li>
+
+            <li class="item-liste">
+              <span class="label-info">Adresse</span>
+              <span class="valeur-info">
+                {{ entreprise.entreprise_rue }}<br>{{ entreprise.cp_code }} {{ entreprise.ville_nom }}
+              </span>
+            </li>
+
+            <li class="item-liste">
+              <span class="label-info">Anciens stagiaires</span>
+              <span class="valeur-info">{{ entreprise.entreprise_nb_stagiaires }}</span>
+            </li>
+          </ul>          
+          
+          <a href="/offres?mots_cles={{ entreprise.entreprise_nom|url_encode }}" class="bouton bouton-postuler">
+            Voir les offres ({{ liste_offres|length }})
+          </a>
+          
+          {% if 'SFx5 - Evaluer une entreprise' in permissions %}
+            <br>
+            <a href="/evaluer-entreprise/{{ entreprise.entreprise_id }}" class="bouton bouton-postuler">Évaluer l'entreprise</a>
+          {% endif %}
+          
+          {% if 'SFx4 - Modifier une entreprise' in permissions %}
+            <br>
+            <a href="/modifier-entreprise/{{ entreprise.entreprise_id }}" class="bouton bouton-postuler">Modifier l'entreprise</a>
+          {% endif %}
+          
+          {% if 'SFx6 - Supprimer une entreprise' in permissions %}
+            <br>
+            <a href="/supprimer-entreprise/{{ entreprise.entreprise_id }}" class="bouton bouton-postuler">Supprimer l'entreprise</a>
+          {% endif %}
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

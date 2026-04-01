@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://stage4all.local/home</loc>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://stage4all.local/offres</loc>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://stage4all.local/entreprises</loc>
+        <priority>0.9</priority>
+    </url>
+
+    <url>
+        <loc>https://stage4all.local/connexion</loc>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://stage4all.local/profil</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://stage4all.local/mes-candidatures</loc>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://stage4all.local/mes-favoris</loc>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://stage4all.local/contact</loc>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://stage4all.local/mentions-legales</loc>
+        <priority>0.3</priority>
+    </url>
+
+    <url>
+        <loc>https://stage4all.local/statistiques</loc>
+        <priority>0.4</priority>
+    </url>
+</urlset>

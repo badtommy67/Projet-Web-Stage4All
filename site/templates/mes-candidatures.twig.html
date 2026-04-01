@@ -1,0 +1,96 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Mes candidatures - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    <div class="conteneur-standard">
+        {% set permissions = session.utilisateur.permissions ?? [] %}
+
+       {% if "SFx21 - Afficher la liste des offres pour lesquelles l'étudiant a postulé" in permissions or "SFx22 - Consulter les candidatures de sa promo" in permissions %}
+            <h1 class="titre-page">Mes Candidatures</h1>
+
+            <div class="liste-offres">
+                {% for candidature in liste_candidatures %}
+                <article class="carte-offre card-candidature-compact">
+                    <div class="en-tete-offre">
+                        <h2 class="wishlist-nom-offre">{{ candidature.offre_titre }}</h2>
+                        <span class="date-candidature">
+                            <i class="fas fa-calendar-alt"></i> {{ candidature.candidature_date|date('d/m/Y') }}
+                        </span>
+                    </div>
+                    
+                    <div class="ligne-bas-candidature">
+                        <div class="infos-candidature-detail">
+                            <span class="offre-entreprise-nom"><strong>{{ candidature.entreprise_nom }}</strong></span>
+                            <span class="separateur-court">•</span>
+                            
+                            <a href="/detail-offre/{{ candidature.offre_id }}" class="bouton-action voir" title="Voir l'offre">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            {% if candidature.candidature_cv %}
+                            <a href="/voir-cv?id={{ candidature.candidature_id }}" target="_blank" class="bouton-action bouton-cv" title="Voir le CV">
+                                <i class="fas fa-file-pdf"></i>
+                            </a>
+                            {% endif %}
+                            {% if candidature.candidature_lettre_motivation %}
+                            <a href="/detail-candidature/{{ candidature.candidature_id }}" target="_blank" class="bouton-action bouton-lm" title="Voir la lettre de motivation">
+                                <i class="fas fa-file-alt"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+                {% else %}
+                <div class="message-vide">
+                    <p>Aucune candidature pour l'instant.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+           {% if nombre_total_pages > 1 %}
+            <div class="conteneur-pagination">
+                <div class="numeros-page">
+                    {% if page_courante > 1 %}
+                        <a href="/mes-candidatures?{{ parametres_url }}&page={{ page_courante - 1 }}" class="bouton-page page-precedente">Précédent</a>
+                    {% else %}
+                        <span class="bouton-page page-precedente">Précédent</span>
+                    {% endif %}
+
+                    {% if page_debut > 1 %}
+                        <a href="/mes-candidatures?{{ parametres_url }}&page=1" class="bouton-page">1</a>
+                        {% if page_debut > 2 %}
+                            <span class="bouton-page">…</span>
+                        {% endif %}
+                    {% endif %}
+
+                    {% for p in page_debut..page_fin %}
+                        <a href="/mes-candidatures?{{ parametres_url }}&page={{ p }}" class="bouton-page {{ p == page_courante ? 'actif' : '' }}">{{ p }}</a>
+                    {% endfor %}
+
+                    {% if page_fin < nombre_total_pages %}
+                        {% if page_fin < nombre_total_pages - 1 %}
+                            <span class="bouton-page">…</span>
+                        {% endif %}
+                        <a href="/mes-candidatures?{{ parametres_url }}&page={{ nombre_total_pages }}" class="bouton-page">{{ nombre_total_pages }}</a>
+                    {% endif %}
+
+                    {% if page_courante < nombre_total_pages %}
+                        <a href="/mes-candidatures?{{ parametres_url }}&page={{ page_courante + 1 }}" class="bouton-page page-suivante">Suivant</a>
+                    {% else %}
+                        <span class="bouton-page page-suivante">Suivant</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="conteneur-standard texte-centre">
+                <p>Vous n'avez pas l'autorisation de consulter ces candidatures.</p>
+                <a href="/home" class="bouton">Retour à l'accueil</a>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Créer une offre - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    {% if 'SFx8 - Créer une offre' in session.utilisateur.permissions %}
+        <h1 class="titre-page">Créer une offre de stage</h1>
+
+        <a href="/gestion-offres" class="bouton-retour-formulaire">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+
+        <div class="conteneur-contact">
+            <form action="/creer-offre" method="POST" id="offreForm">
+
+                <h3>Informations générales</h3>
+
+                <div class="groupe-formulaire">
+                    <label for="titre">Titre du poste <span class="requis">*</span></label>
+                    <input type="text" id="titre" name="titre" required placeholder="Ex: Développeur Web Fullstack">
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="entreprise_input">Entreprise <span class="requis">*</span></label>
+                        <input type="text" id="entreprise_input" placeholder="Tapez le nom d'une entreprise..." autocomplete="off" required list="entreprises-list">
+                        <datalist id="entreprises-list">
+                            {% for entreprise in entreprises %}
+                                <option value="{{ entreprise.entreprise_nom }}" data-id="{{ entreprise.entreprise_id }}">
+                            {% endfor %}
+                        </datalist>
+                        <input type="hidden" name="entreprise_id" id="entreprise_id_hidden" required>
+                    </div>
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="code_postal">Code Postal <span class="requis">*</span></label>
+                        <input type="text" id="code_postal" name="code_postal" required placeholder="67000" maxlength="5" pattern="[0-9]{5}">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="ville_nom">Ville <span class="requis">*</span></label>
+                        <select id="ville_nom" name="ville_nom" required>
+                            <option value="" disabled selected>Entrez d'abord un code postal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="duree">Durée (en mois) <span class="requis">*</span></label>
+                        <input type="number" id="duree" name="duree" required min="1" placeholder="Ex: 6">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="date_debut">Date de début <span class="requis">*</span></label>
+                        <input type="date" id="date_debut" name="date_debut" required>
+                    </div>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="remuneration">Rémunération (€/mois)</label>
+                    <input type="number" id="remuneration" name="remuneration" min="0" step="0.01" placeholder="Ex: 600">
+                </div>
+
+                <h3>Description de l'offre</h3>
+
+                <div class="groupe-formulaire">
+                    <label for="description">Description du poste <span class="requis">*</span></label>
+                    <textarea id="description" name="description" required placeholder="Décrivez le poste..."></textarea>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="missions">Missions <span class="requis">*</span></label>
+                    <textarea id="missions" name="missions" required placeholder="Listez les missions..."></textarea>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="profil">Profil recherché <span class="requis">*</span></label>
+                    <textarea id="profil" name="profil" required placeholder="Décrivez le profil recherché..."></textarea>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label>Compétences</label>
+                    <div id="competences-selectionnees" class="tags-container"></div>
+                    <input type="text" id="competence-input" placeholder="Tapez une compétence et appuyez sur Entrée..." list="competences-list">
+                    <datalist id="competences-list">
+                        {% for competence in competences %}
+                            <option value="{{ competence.competence_libelle }}">
+                        {% endfor %}
+                    </datalist>
+                    <input type="hidden" name="competences_ids" id="competences-ids-input">
+                    <input type="hidden" name="nouvelles_competences" id="nouvelles-competences-input">
+                    <small>Sélectionnez une compétence existante ou tapez-en une nouvelle, puis appuyez sur Entrée</small>
+                </div>
+
+                <button type="submit" class="bouton bouton-formulaire">Publier l'offre</button>
+
+            </form>
+        </div>
+    {% else %}
+        <div class="conteneur-standard">
+            <p class="texte-centre">Accès refusé. Vous n'avez pas la permission de créer des offres.</p>
+            <div class="texte-centre">
+                <a href="/profil" class="bouton">Retour au profil</a>
+            </div>
+        </div>
+    {% endif %}
+</section>
+
+ <script>
+    const competencesExistantes = {
+        {% for competence in competences %}
+            "{{ competence.competence_libelle|lower|escape('js') }}": {{ competence.competence_id }},
+        {% endfor %}
+    };
+
+    const entreprisesMap = {
+        {% for entreprise in entreprises %}
+            "{{ entreprise.entreprise_nom|lower|escape('js') }}": {{ entreprise.entreprise_id }},
+        {% endfor %}
+    };
+</script>
+{% endblock %}

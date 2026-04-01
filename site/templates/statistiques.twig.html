@@ -1,0 +1,108 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Statistiques - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    <div class="conteneur-standard">
+        {% set permissions = session.utilisateur.permissions ?? [] %}
+        {% set est_connecte = session.utilisateur is defined and session.utilisateur is not null %}
+
+        {% if not est_connecte or "SFx11 - Consulter les statistiques des offres" in permissions %}
+            <h1 class="titre-page">Statistiques des Offres</h1>
+            <p class="texte-introduction texte-centre">Consultez nos indicateurs clés ci-dessous</p>
+
+            <div class="carousel-partenaires carousel-stats">
+                
+                <div class="group">
+                    <div class="card card-stat">
+                        <div class="valeur-carte">
+                            <h2>{{ total_offres }}</h2>
+                            <p>Offres disponibles<br>en base de données</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat">
+                        <div class="valeur-carte">
+                            <h2>{{ moyenne_candidatures }}</h2>
+                            <p>Candidatures<br>en moyenne par offre</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat">
+                        <div class="valeur-carte">
+                            <h2>Répartition (Durée)</h2>
+                            <p>
+                                ⏱️ 1 à 2 mois : {{ duree_courte }}%<br>
+                                ⏱️ 3 à 5 mois : {{ duree_moyenne }}%<br>
+                                ⏱️ 6 mois et + : {{ duree_longue }}%
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat">
+                        <div class="valeur-carte">
+                            <h2>Top Wish-list</h2>
+                            <p>
+                                {% for offre in top_wishlist %}
+                                    {% if loop.index == 1 %}🥇{% endif %}
+                                    {% if loop.index == 2 %}🥈{% endif %}
+                                    {% if loop.index == 3 %}🥉{% endif %}
+                                    {{ offre.offre_titre }}<br>
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div aria-hidden="true" class="group">
+                    <div class="card card-stat">
+                        <div class="valeur-carte">
+                            <h2>{{ total_offres }}</h2>
+                            <p>Offres disponibles<br>en base de données</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat">
+                        <div class="valeur-carte">
+                            <h2>{{ moyenne_candidatures }}</h2>
+                            <p>Candidatures<br>en moyenne par offre</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat">
+                        <div class="valeur-carte">
+                            <h2>Répartition (Durée)</h2>
+                            <p>
+                                ⏱️ 1 à 2 mois : {{ duree_courte }}%<br>
+                                ⏱️ 3 à 5 mois : {{ duree_moyenne }}%<br>
+                                ⏱️ 6 mois et + : {{ duree_longue }}%
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat">
+                        <div class="valeur-carte">
+                            <h2>Top Wish-list</h2>
+                            <p>
+                                {% for offre in top_wishlist %}
+                                    {% if loop.index == 1 %}🥇{% endif %}
+                                    {% if loop.index == 2 %}🥈{% endif %}
+                                    {% if loop.index == 3 %}🥉{% endif %}
+                                    {{ offre.offre_titre }}<br>
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        {% else %}
+            <div class="conteneur-standard texte-centre">
+                <p>Vous n'avez pas l'autorisation de consulter les statistiques.</p>
+                <a href="/home" class="bouton">Retour à l'accueil</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

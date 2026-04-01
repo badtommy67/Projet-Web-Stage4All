@@ -1,0 +1,42 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Supprimer un utilisateur - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    {% set permissions = session.utilisateur.permissions ?? [] %}
+
+    {% if 'SFx15 - Supprimer un compte Pilote' in permissions or 'SFx19 - Supprimer un compte Etudiant' in permissions %}
+        <h1 class="titre-page">
+            Supprimer le {{ utilisateur.role_nom }} : 
+            {{ utilisateur.utilisateur_prenom }} {{ utilisateur.utilisateur_nom }}
+        </h1>
+
+        <div class="conteneur-contact">
+            <div class="groupe-formulaire">
+                <h2>Avertissement</h2>
+                <p>Vous êtes sur le point de supprimer définitivement ce <strong>{{ utilisateur.role_nom|lower }}</strong>.</p>
+                
+                {% if utilisateur.role_nom == 'Pilote' %}
+                    <p class="texte-danger">Attention : Supprimer un pilote peut impacter le suivi des promotions qu'il gérait.</p>
+                {% else %}
+                    <p>Toutes ses candidatures et évaluations seront également supprimées.</p>
+                {% endif %}
+                
+                <p id="alerte"><strong>Cette action est irréversible.</strong></p>
+            </div>
+
+            <form action="/supprimer-utilisateur/{{ utilisateur.utilisateur_id }}" method="POST">
+                <button type="submit" class="bouton bouton-formulaire">Confirmer la suppression</button>
+                <br><br>
+                <a href="/gestion-utilisateurs" class="bouton-retour-formulaire">Annuler</a>
+            </form>
+        </div>
+    {% else %}
+        <div class="conteneur-standard texte-centre">
+            <p>Accès refusé. Vous n'avez pas la permission de supprimer un utilisateur.</p>
+            <a href="/profil" class="bouton">Retour au profil</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

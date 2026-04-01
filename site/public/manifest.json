@@ -1,0 +1,20 @@
+{
+  "name": "Stage4All - Gestion de Stages",
+  "short_name": "Stage4All",
+  "start_url": "/?utm_source=pwa",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "icons": [
+    {
+      "src": "https://stage4all-static.local/images/icon-stage4all-pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://stage4all-static.local/images/icon-stage4all-pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

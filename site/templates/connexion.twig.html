@@ -1,0 +1,27 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Connexion - Stage4All{% endblock %}
+
+{% block content %}
+<section>
+    <h1 class="titre-page">Connexion</h1>
+    
+    <div class="conteneur-connexion">
+        <h2>SE CONNECTER</h2>
+
+        <form method="POST" action="/connexion">
+            <div class="groupe-formulaire">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required placeholder="adresse-email@cesi.fr">
+            </div>
+
+            <div class="groupe-formulaire">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" required placeholder="Mot de passe">
+            </div>
+
+            <button type="submit" class="bouton bouton-formulaire">Se connecter</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

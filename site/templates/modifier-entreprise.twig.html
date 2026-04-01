@@ -1,0 +1,111 @@
+{% extends "base.twig.html" %} 
+
+{% block title %}Modifier une entreprise - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    {% if 'SFx4 - Modifier une entreprise' in session.utilisateur.permissions %}
+        <h1 class="titre-page">Modifier l'entreprise</h1>
+        
+        <a href="/gestion-entreprises" class="bouton-retour-formulaire">
+            <i class="fas fa-arrow-left"></i> Retour à la gestion
+        </a>
+        
+        <div class="conteneur-contact">
+            <form action="/modifier-entreprise/{{ entreprise.entreprise_id }}" method="POST" id="entrepriseForm">
+                <h2>Édition de {{ entreprise.entreprise_nom }}</h2>
+                <h3>Informations générales</h3>
+                
+                <div class="groupe-formulaire">
+                    <label for="nom">Nom de l'entreprise <span class="requis">*</span></label>
+                    <input type="text" id="nom" name="nom" required value="{{ entreprise.entreprise_nom }}">
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="secteur">Secteur d'activité <span class="requis">*</span></label>
+                        <select id="secteur" name="secteur_id" required>
+                            <option value="" disabled>-- Choisir un secteur --</option>
+                            {% for secteur in secteurs %}
+                                <option value="{{ secteur.secteur_id }}" {% if secteur.secteur_id == entreprise.secteur_id %}selected{% endif %}>
+                                    {{ secteur.secteur_nom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="site_web">Site web</label>
+                        <input type="url" id="site_web" name="site_web" value="{{ entreprise.entreprise_siteweb }}">
+                    </div>
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="taille">Nombre de salariés (Taille) <span class="requis">*</span></label>
+                        <input type="number" id="taille" name="taille" required min="1" value="{{ entreprise.entreprise_taille }}">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="anciens_stagiaires">Anciens élèves ayant fait un stage <span class="requis">*</span></label>
+                        <input type="number" id="anciens_stagiaires" name="anciens_stagiaires" required min="0" value="{{ entreprise.entreprise_nb_stagiaires }}">
+                    </div>
+                </div>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="code_postal">Code Postal <span class="requis">*</span></label>
+                        <input type="text" id="code_postal" name="code_postal" required maxlength="5" pattern="[0-9]{5}" value="{{ entreprise.ville_cp }}">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="ville_nom">Ville <span class="requis">*</span></label>
+                        <select id="ville_nom" name="ville_nom">
+                            <option value="{{ entreprise.ville_nom }}" selected>{{ entreprise.ville_nom }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3>Description</h3>
+
+                <div class="groupe-formulaire">
+                    <label for="extrait">Extrait de l'entreprise <span class="requis">*</span></label>
+                    <textarea id="extrait" name="extrait" required>{{ entreprise.entreprise_extrait }}</textarea>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="description">Présentation de l'entreprise <span class="requis">*</span></label>
+                    <textarea id="description" name="description" required>{{ entreprise.entreprise_presentation }}</textarea>
+                </div>
+
+                <h3>Contact</h3>
+
+                <div class="ligne-formulaire">
+                    <div class="groupe-formulaire">
+                        <label for="email">Email de contact <span class="requis">*</span></label>
+                        <input type="email" id="email" name="email" required value="{{ entreprise.entreprise_email }}">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="telephone">Téléphone <span class="requis">*</span></label>
+                        <input type="tel" id="telephone" name="telephone" required value="{{ entreprise.entreprise_telephone }}">
+                    </div>
+                </div>
+
+                <div class="groupe-formulaire">
+                    <label for="adresse">Adresse complète <span class="requis">*</span></label>
+                    <input type="text" id="adresse" required name="adresse" value="{{ entreprise.entreprise_rue }}">
+                </div>
+
+                <button type="submit" class="bouton bouton-formulaire">Enregistrer les modifications</button>
+
+            </form>
+        </div>
+    {% else %}
+        <div class="conteneur-standard texte-centre">
+            <p>Accès refusé. Vous n'avez pas la permission de modifier cette entreprise.</p>
+            <a href="/profil" class="bouton">Retour au profil</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

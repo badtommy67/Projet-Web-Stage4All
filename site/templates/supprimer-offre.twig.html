@@ -1,0 +1,41 @@
+{% extends "base.twig.html" %} 
+
+{% block title %}Supprimer une offre - Stage4All{% endblock %} 
+
+{% block content %}
+<section class="fond-blanc">
+    {% set permissions = session.utilisateur.permissions ?? [] %}
+
+    {% if 'SFx10 - Supprimer une offre' in permissions %}
+        <h1 class="titre-page">Supprimer l'offre : {{ offre.offre_titre }}</h1>
+
+        <div class="conteneur-contact">
+            {% if nb_candidatures > 0 %}
+                <div class="groupe-formulaire">
+                    <h2>Attention !</h2>
+                    <p class="centre">Cette offre possède actuellement <strong>{{ nb_candidatures }} candidature(s)</strong>.</p>
+                    <p id="alerte" class="centre"><em>Cette offre sera archivée (et non supprimée définitivement) afin de conserver l'historique des candidatures associées.</em></p>
+                </div>
+            {% else %}
+                <div class="groupe-formulaire">
+                    <p>Cette offre n'a aucune candidature associée. Elle sera supprimée définitivement.</p>
+                </div>
+            {% endif %}
+
+            <p>Êtes-vous sûr de vouloir continuer ?</p>
+
+            <form action="/supprimer-offre/{{ offre.offre_id }}" method="POST">
+                <button type="submit" class="bouton bouton-formulaire">Oui, confirmer</button>
+                <br><br>
+                <a href="/gestion-offres" class="bouton-retour-formulaire">Annuler et retourner à la liste</a>
+            </form>
+
+        </div>
+    {% else %}
+        <div class="conteneur-standard texte-centre">
+            <p>Accès refusé. Vous n'avez pas la permission de supprimer une offre.</p>
+            <a href="/profil" class="bouton">Retour au profil</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Modifier un utilisateur - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    <div class="conteneur-standard">
+        {% set permissions = session.utilisateur.permissions ?? [] %}
+
+        {% if "SFx14 - Modifier un compte Pilote" in permissions or "SFx18 - Modifier un compte Etudiant" in permissions %}
+            <h1 class="titre-page">Modifier le profil</h1>
+
+            <a href="/gestion-utilisateurs" class="bouton-retour-formulaire">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+
+            <div class="conteneur-connexion mode-inscription">
+
+                <h2>Édition de {{ utilisateur.utilisateur_prenom }}</h2>
+
+                {% if erreur %}
+                    <div class="message-erreur">{{ erreur }}</div>
+                {% endif %}
+
+                <form action="/modifier-utilisateur/{{ utilisateur.utilisateur_id }}" method="POST" id="editForm">
+
+                    <div class="ligne-formulaire">
+                        <div class="groupe-formulaire">
+                            <label for="prenom">Prénom</label>
+                            <input type="text" id="prenom" name="prenom" required value="{{ utilisateur.utilisateur_prenom }}">
+                        </div>
+                        <div class="groupe-formulaire">
+                            <label for="nom">Nom</label>
+                            <input type="text" id="nom" name="nom" required value="{{ utilisateur.utilisateur_nom }}">
+                        </div>
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="email">Adresse mail</label>
+                        <input type="email" id="email" name="email" required value="{{ utilisateur.utilisateur_email }}">
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="role_id">Rôle</label>
+                        <select id="role_id" name="role_id" required>
+                            <option value="">-- Choisir un rôle --</option>
+                            {% for role in liste_roles %}
+                                <option value="{{ role.role_id }}" {% if role.role_id == utilisateur.role_id %}selected{% endif %}>
+                                    {{ role.role_nom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="ligne-formulaire">
+                        <div class="groupe-formulaire">
+                            <label for="campus_id">Campus</label>
+                            <select id="campus_id" name="campus_id">
+                                <option value="">Aucun</option>
+                                {% for campus in liste_campus %}
+                                    <option value="{{ campus.campus_id }}" {% if campus.campus_id == utilisateur.campus_id %}selected{% endif %}>
+                                        {{ campus.campus_nom }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="groupe-formulaire">
+                            <label for="promotion_id">Promotion</label>
+                            <select id="promotion_id" name="promotion_id">
+                                <option value="">Aucune</option>
+                                {% for promotion in liste_promotions %}
+                                    <option value="{{ promotion.promotion_id }}" {% if promotion.promotion_id == utilisateur.promotion_id %}selected{% endif %}>
+                                        {{ promotion.promotion_nom }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="password">Nouveau mot de passe (optionnel)</label>
+                        <div class="enveloppe-mot-de-passe">
+                            <input type="password" id="password" name="password" placeholder="••••••••" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$">
+                            <i class="fas fa-eye-slash bascule-mot-de-passe" onclick="togglePassword('password')"></i>
+                        </div>
+                        <small>Min. 8 caractères, 1 majuscule, 1 chiffre.</small>
+                    </div>
+
+                    <div class="groupe-formulaire">
+                        <label for="confirm_password">Confirmation nouveau mot de passe</label>
+                        <div class="enveloppe-mot-de-passe">
+                            <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••">
+                            <i class="fas fa-eye-slash bascule-mot-de-passe" onclick="togglePassword('confirm_password')"></i>
+                        </div>
+                        <small style="color:#dc3545;display:none;" id="error-msg">Les mots de passe ne correspondent pas.</small>
+                    </div>
+
+                    <button type="submit" class="bouton bouton-formulaire">Enregistrer les modifications</button>
+
+                </form>
+            </div>
+        {% else %}
+            <div class="conteneur-standard texte-centre">
+                <p>Accès refusé. Vous n'avez pas la permission de modifier cet utilisateur.</p>
+                <a href="/profil" class="bouton">Retour au profil</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

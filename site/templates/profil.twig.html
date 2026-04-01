@@ -1,0 +1,338 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Profil - Stage4All{% endblock %}
+
+{% block content %}
+    <section class="fond-gris page-detail-offre">
+        <div class="conteneur-standard">
+            
+            <div class="grille-detail-offre">
+
+                <aside class="colonne-laterale-infos">
+                    <div class="carte-resume-laterale">
+                        <div class="avatar-profil">
+                            {{ utilisateur.utilisateur_prenom|slice(0, 1) }}
+                        </div>
+                        <h3>{{ utilisateur.utilisateur_prenom }} {{ utilisateur.utilisateur_nom|upper }}</h3>
+                        
+                        <span class="offre-duree">{{ utilisateur.role_nom }}</span>
+
+                        {% if "SFx21 - Afficher la liste des offres pour lesquelles l'étudiant a postulé" in permissions or "SFx22 - Afficher la liste des offres auxquelles les élèves du pilote ont postulé" in permissions %}
+                            <p class="profil-ecole">{{ utilisateur.promotion_nom }} • {{ utilisateur.campus_nom }}</p>
+                        {% endif %}
+                        
+                        <nav class="menu-profil">                            
+                            {% if "SFx11 - Consulter les statistiques des offres" in permissions %}
+                                <a href="#stats" class="lien-menu-profil"><i class="fas fa-chart-line"></i> Statistiques</a>
+                            {% endif %}
+
+                            {% if "SFx12 - Rechercher et afficher un compte Pilote" in permissions %}
+                                <a href="#users" class="lien-menu-profil"><i class="fas fa-users-cog"></i> Utilisateurs</a>
+                            {% endif %}
+
+                            {% if "SFx22 - Afficher la liste des offres auxquelles les élèves du pilote ont postulé" in permissions %}
+                                <a href="#etudiants" class="lien-menu-profil"><i class="fas fa-user-graduate"></i> Mes Élèves</a>
+                                <a href="#candidatures-campus" class="lien-menu-profil"><i class="fas fa-users"></i> Suivi Candidatures</a>
+                            {% endif %}
+
+                            {% if "SFx3 - Créer une entreprise" in permissions or "SFx4 - Modifier une entreprise" in permissions %}
+                                <a href="#entreprises" class="lien-menu-profil"><i class="fas fa-building"></i> Entreprises</a>
+                            {% endif %}
+
+                            {% if "SFx8 - Créer une offre" in permissions or "SFx9 - Modifier une offre" in permissions %}
+                                <a href="#offres" class="lien-menu-profil"><i class="fas fa-briefcase"></i> Offres</a>
+                            {% endif %}
+
+                            {% if "SFx21 - Afficher la liste des offres pour lesquelles l'étudiant a postulé" in permissions %}
+                                <a href="#candidatures-perso" class="lien-menu-profil"><i class="fas fa-paper-plane"></i> Mes Candidatures</a>
+                            {% endif %}
+
+                            {% if "SFx23 - Afficher les offres ajoutées à la wish-list" in permissions %}
+                                <a href="#favoris" class="lien-menu-profil"><i class="fas fa-heart"></i> Ma Wishlist</a>
+                            {% endif %}
+
+                            <a href="/deconnexion" class="lien-menu-profil danger"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                        </nav>
+                    </div>
+                </aside>
+
+                <div class="carte-profil">
+
+                    {# Boite Statistiques #}
+                    {% if "SFx11 - Consulter les statistiques des offres" in permissions %}
+                        <div class="carte-offre" id="stats">
+                            <div class="en-tete-offre">
+                                <h3>Statistiques globales</h3>
+                            </div>
+                            <p class="offre-extrait">Consultez l'évolution de la plateforme, le nombre d'offres pourvues et l'activité des utilisateurs.</p>
+                            <div class="bouton-exploration">
+                                <a href="/statistiques" class="bouton-secondaire">Voir le tableau de bord</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Boite Mes élèves #}
+                    {% if "SFx22 - Afficher la liste des offres auxquelles les élèves du pilote ont postulé" in permissions %}
+                        <div class="carte-offre" id="etudiants">
+                            <div class="en-tete-offre">
+                                <h3>Mes élèves</h3>
+                            </div>
+                            <div class="tableau-responsif">
+                                <table class="tableau-personnalise">
+                                    <thead>
+                                        <tr>
+                                            <th>Étudiant</th>
+                                            <th class="texte-centre">Promotion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for etudiant in liste_etudiants|slice(0, 3) %}
+                                        <tr>
+                                            <td><strong>{{ etudiant.utilisateur_prenom }} {{ etudiant.utilisateur_nom|upper }}</strong></td>
+                                            <td class="texte-centre">{{ etudiant.promotion_nom }}</td>
+                                        </tr>
+                                        {% else %}
+                                        <tr><td colspan="2">Aucun étudiant trouvé.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="bouton-exploration">
+                                <a href="/gestion-utilisateurs" class="bouton-secondaire">Gérer mes élèves</a>
+                            </div>
+                        </div>
+
+                        {# Boite suivi des candidature #}
+                        <div class="carte-offre" id="candidatures-campus">
+                            <div class="en-tete-offre">
+                                <h3>Dernières candidatures de mes élèves</h3>
+                            </div>
+                            <div class="tableau-responsif">
+                                <table class="tableau-personnalise">
+                                    <thead>
+                                        <tr>
+                                            <th>Étudiant</th>
+                                            <th>Offre</th>
+                                            <th class="texte-centre">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for candidature in liste_candidatures_campus|slice(0, 3) %}
+                                        <tr>
+                                            <td><strong>{{ candidature.utilisateur_prenom }} {{ candidature.utilisateur_nom|upper }}</strong></td>
+                                            <td>{{ candidature.offre_titre }}</td>
+                                            <td class="texte-centre date-candidature">{{ candidature.candidature_date|date('d/m/Y') }}</td>
+                                        </tr>
+                                        {% else %}
+                                        <tr><td colspan="3">Aucune candidature trouvée.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="bouton-exploration">
+                                <a href="/suivi-eleves" class="bouton-secondaire">Accéder au suivi complet</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Boite gestion des utilisateurs #}
+                    {% if "SFx12 - Rechercher et afficher un compte Pilote" in permissions %}
+                        <div class="carte-offre" id="users">
+                            <div class="en-tete-offre">
+                                <h3>Gestion des utilisateurs</h3>
+                            </div>
+                            <div class="tableau-responsif">
+                                <table class="tableau-personnalise">
+                                    <thead>
+                                        <tr>
+                                            <th>Nom</th>
+                                            <th>Rôle</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for utilisateur_item in liste_utilisateurs|slice(0, 3) %}
+                                        <tr>
+                                            <td>{{ utilisateur_item.utilisateur_prenom }} {{ utilisateur_item.utilisateur_nom|upper }}</td>
+                                            <td><span class="badge-info">{{ utilisateur_item.role_nom }}</span></td>
+                                            <td>
+                                                <a href="/modifier-utilisateur/{{ utilisateur_item.utilisateur_id }}" class="bouton bouton-edition">Éditer</a>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr><td colspan="3">Aucun utilisateur trouvé.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="bouton-exploration">
+                                <a href="/gestion-utilisateurs" class="bouton-secondaire">Gérer les utilisateurs</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Boite gestion des entreprises #}
+                    {% if "SFx3 - Créer une entreprise" in permissions or "SFx4 - Modifier une entreprise" in permissions %}
+                        <div class="carte-offre" id="entreprises">
+                            <div class="en-tete-offre">
+                                <h3>Entreprises</h3>
+                            </div>
+                            <div class="tableau-responsif">
+                                <table class="tableau-personnalise">
+                                    <thead>
+                                        <tr>
+                                            <th>Nom</th>
+                                            <th>Ville</th>
+                                            <th>Secteur</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for entreprise in liste_entreprises|slice(0, 3) %}
+                                        <tr>
+                                            <td><strong>{{ entreprise.entreprise_nom }}</strong></td>
+                                            <td>{{ entreprise.ville_nom }}</td>
+                                            <td><span class="badge-info">{{ entreprise.secteur_nom }}</span></td>
+                                            <td>
+                                                {% if "SFx4 - Modifier une entreprise" in permissions %}
+                                                    <a href="/modifier-entreprise/{{ entreprise.entreprise_id }}" class="bouton bouton-edition">Éditer</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr><td colspan="4">Aucune entreprise trouvée.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="bouton-exploration">
+                                <a href="/gestion-entreprises" class="bouton-secondaire">Gérer les entreprises</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Boite gestion des offres #}
+                    {% if "SFx8 - Créer une offre" in permissions or "SFx9 - Modifier une offre" in permissions %}
+                        <div class="carte-offre" id="offres">
+                            <div class="en-tete-offre">
+                                <h3>Offres</h3>
+                            </div>
+                            <div class="tableau-responsif">
+                                <table class="tableau-personnalise">
+                                    <thead>
+                                        <tr>
+                                            <th>Titre</th>
+                                            <th>Entreprise</th>
+                                            <th>Ville</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for offre in liste_offres|slice(0, 3) %}
+                                        <tr>
+                                            <td><strong>{{ offre.offre_titre }}</strong></td>
+                                            <td>{{ offre.entreprise_nom }}</td>
+                                            <td>{{ offre.ville_nom }}</td>
+                                            <td>
+                                                {% if "SFx9 - Modifier une offre" in permissions %}
+                                                    <a href="/modifier-offre/{{ offre.offre_id }}" class="bouton bouton-edition">Éditer</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr><td colspan="4">Aucune offre trouvée.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="bouton-exploration">
+                                <a href="/gestion-offres" class="bouton-secondaire">Gérer les offres</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+
+                    {# Boite mes candidatures #}
+                    {% if "SFx21 - Afficher la liste des offres pour lesquelles l'étudiant a postulé" in permissions %}
+                        <div class="carte-offre" id="candidatures-perso">
+                            <div class="en-tete-offre">
+                                <h3>Mes candidatures</h3>
+                            </div>
+                            <div class="tableau-responsif">
+                                <table class="tableau-personnalise">
+                                    <thead>
+                                        <tr>
+                                            <th>Entreprise</th>
+                                            <th>Offre</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for candidature in liste_candidatures|slice(0, 3) %}
+                                        <tr>
+                                            <td><strong>{{ candidature.entreprise_nom }}</strong></td>
+                                            <td>{{ candidature.offre_titre }}</td>
+                                            <td class="date-candidature">{{ candidature.candidature_date|date('d/m/Y') }}</td>
+                                        </tr>
+                                        {% else %}
+                                        <tr><td colspan="3">Aucune candidature pour l'instant.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="bouton-exploration">
+                                <a href="/mes-candidatures" class="bouton-secondaire">Historique complet</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Boite ma wishlist #}
+                    {% if "SFx23 - Afficher les offres ajoutées à la wish-list" in permissions %}
+                        <div class="carte-offre" id="favoris">
+                            <div class="en-tete-offre">
+                                <h3>Ma wishlist</h3>
+                            </div>
+                            <div class="tableau-responsif">
+                                <table class="tableau-personnalise">
+                                    <thead>
+                                        <tr>
+                                            <th>Offre</th>
+                                            <th>Lieu</th>
+                                            <th class="texte-centre">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for favori in liste_wishlist|slice(0, 3) %}
+                                        <tr>
+                                            <td><strong>{{ favori.offre_titre }}</strong></td>
+                                            <td>{{ favori.ville_nom }}</td>
+                                            <td class="texte-centre">
+                                                <a href="/detail-offre/{{ favori.offre_id }}" class="bouton-action voir" title="Voir l'offre"><i class="fas fa-eye"></i></a>
+                                                {% if "SFx25 - Retirer une offre à la wish-list" in permissions %}
+                                                    <form method="POST" action="/wishlist-retirer" style="display: inline-block; margin: 0;">
+                                                        <input type="hidden" name="offre_id" value="{{ favori.offre_id }}">
+                                                        <button type="submit" class="bouton-action supprimer" title="Retirer des favoris" style="border: none; background: transparent; cursor: pointer; padding: 0;">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr><td colspan="3">Aucune offre dans la wishlist.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="bouton-exploration">
+                                <a href="/mes-favoris" class="bouton-secondaire">Gérer ma wishlist</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

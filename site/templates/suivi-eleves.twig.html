@@ -1,0 +1,132 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Suivi des élèves - Stage4All{% endblock %}
+
+{% block content %}
+<section class="fond-blanc">
+    <div class="conteneur-standard">
+        {% set permissions = session.utilisateur.permissions ?? [] %}
+
+        {% if "SFx22 - Afficher la liste des offres auxquelles les élèves du pilote ont postulé" in permissions %}
+            <h1 class="titre-page">Suivi des élèves</h1>
+
+            <form action="/suivi-eleves" method="GET" class="barre-recherche" id="searchForm" style="flex-wrap: wrap; gap: 15px;" onsubmit="Array.from(this.elements).forEach(el => { if(el.value === '') el.disabled = true; })">
+                <div class="groupe-recherche">
+                    <label for="search">Rechercher un élève</label>
+                    <input type="text" id="search" name="nom" placeholder="Nom ou prénom..." value="{{ recherche_nom }}">
+                </div>
+                
+                <div class="groupe-recherche">
+                    <label for="date_filtre">Date de candidature</label>
+                    <input type="date" id="date_filtre" name="date" value="{{ recherche_date }}">
+                </div>
+
+                <div class="groupe-recherche">
+                    <label for="entreprise_input">Entreprise</label>
+                    <input type="text" id="entreprise_input" name="entreprise" placeholder="Tapez une entreprise..." value="{{ recherche_entreprise }}" autocomplete="off" list="entreprises-list">
+                    <datalist id="entreprises-list">
+                        {% for entreprise_nom in datalist_entreprises %}
+                            <option value="{{ entreprise_nom }}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+
+                <div class="groupe-recherche">
+                    <label for="offre_input">Offre ciblée</label>
+                    <input type="text" id="offre_input" name="offre" placeholder="Tapez un poste..." value="{{ recherche_offre }}" autocomplete="off" list="offres-list">
+                    <datalist id="offres-list">
+                        {% for offre_titre in datalist_offres %}
+                            <option value="{{ offre_titre }}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+
+                <div id="filter">
+                    <button type="submit" class="bouton bouton-recherche">Filtrer</button>
+                </div>
+            </form>
+
+            <div class="liste-offres">
+                {% for candidature in liste_candidatures %}
+                <article class="carte-offre card-user-compact">
+                    <div class="en-tete-offre">
+                        <h3>{{ candidature.utilisateur_prenom }} {{ candidature.utilisateur_nom|upper }}</h3>
+                        <span class="offre-lieu"><i class="fas fa-map-marker-alt"></i> {{ candidature.ville_nom }}</span>
+                    </div>
+                    <div class="ligne-bas-utilisateur">
+                        <div class="infos-utilisateur-detail">
+                            <span class="offre-duree">{{ candidature.offre_titre }}</span>
+                            <span class="separateur-court">•</span>
+                            <span><i class="fas fa-building"></i> {{ candidature.entreprise_nom }}</span>
+                            <span class="separateur-court">•</span>
+                            <span class="promo-utilisateur">Promo <strong>{{ candidature.promotion_nom }}</strong></span>
+                            <span class="separateur-court">•</span>
+                            <span><i class="fas fa-calendar-alt"></i> {{ candidature.candidature_date|date('d/m/Y') }}</span>
+                        </div>
+                        <div class="actions-utilisateur">
+                            <a href="/detail-offre/{{ candidature.offre_id }}" class="bouton-action modifier" title="Détail de l'offre"><i class="fas fa-briefcase"></i></a>
+                            
+                            {% if candidature.candidature_cv %}
+                            <a href="/voir-cv?id={{ candidature.candidature_id }}" target="_blank" class="bouton-action" title="Voir le CV" id="bouton-cv">
+                                <i class="fas fa-file-pdf"></i>
+                            </a>
+                            {% endif %}
+                            
+                            {% if candidature.candidature_lettre_motivation %}
+                            <a href="/detail-candidature/{{ candidature.candidature_id }}" target="_blank" class="bouton-action" title="Voir la lettre de motivation" id="bouton-lm">
+                                <i class="fas fa-file-alt"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+                {% else %}
+                <p>Aucune candidature trouvée.</p>
+                {% endfor %}
+            </div>
+
+            {% if nombre_total_pages > 1 %}
+            <div class="conteneur-pagination">
+                <div class="numeros-page">
+                    {% if page_courante > 1 %}
+                        <a href="/suivi-eleves?{{ parametres_url }}&page={{ page_courante - 1 }}" class="bouton-page page-precedente">Précédent</a>
+                    {% else %}
+                        <span class="bouton-page page-precedente">Précédent</span>
+                    {% endif %}
+
+                    {% if page_debut > 1 %}
+                        <a href="/suivi-eleves?{{ parametres_url }}&page=1" class="bouton-page">1</a>
+                        {% if page_debut > 2 %}
+                            <span class="bouton-page">…</span>
+                        {% endif %}
+                    {% endif %}
+
+                    {% for p in page_debut..page_fin %}
+                        <a href="/suivi-eleves?{{ parametres_url }}&page={{ p }}" class="bouton-page {{ p == page_courante ? 'actif' : '' }}">{{ p }}</a>
+                    {% endfor %}
+
+                    {% if page_fin < nombre_total_pages %}
+                        {% if page_fin < nombre_total_pages - 1 %}
+                            <span class="bouton-page">…</span>
+                        {% endif %}
+                        <a href="/suivi-eleves?{{ parametres_url }}&page={{ nombre_total_pages }}" class="bouton-page">{{ nombre_total_pages }}</a>
+                    {% endif %}
+
+                    {% if page_courante < nombre_total_pages %}
+                        <a href="/suivi-eleves?{{ parametres_url }}&page={{ page_courante + 1 }}" class="bouton-page page-suivante">Suivant</a>
+                    {% else %}
+                        <span class="bouton-page page-suivante">Suivant</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="conteneur-standard texte-centre">
+                <p>Accès refusé. Vous n'avez pas la permission de consulter le suivi des élèves.</p>
+                <a href="/profil" class="bouton">Retour au profil</a>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
