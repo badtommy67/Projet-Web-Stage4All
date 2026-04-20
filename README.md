@@ -186,9 +186,9 @@ mysql -u root -p stage4all < config/donnees.sql
 ```apache
 <VirtualHost *:80>
     ServerName stage4all.local
-    DocumentRoot /var/www/stage4all/site/public
+    DocumentRoot /var/www/Projet-Web-Stage4All/site/public
 
-    <Directory /var/www/stage4all/site/public>
+    <Directory /var/www/Projet-Web-Stage4All/site/public>
         AllowOverride All
         Require all granted
     </Directory>
@@ -202,9 +202,9 @@ Ce projet utilise un sous-domaine dédié pour servir les fichiers statiques afi
 ```
 <VirtualHost *:80>
     ServerName stage4all-static.local
-    DocumentRoot /var/www/stage4all/static
+    DocumentRoot /var/www/Projet-Web-Stage4All/static
 
-    <Directory /var/www/stage4all/static>
+    <Directory /var/www/Projet-Web-Stage4All/static>
         AllowOverride All
         Require all granted
     </Directory>
