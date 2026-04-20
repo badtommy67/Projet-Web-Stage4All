@@ -145,7 +145,7 @@ Le projet suit une architecture **MVC stricte** :
 ### 1. Cloner le dépôt
 
 ```bash
-git clone [https://github.com/votre-groupe/stage4all.git](https://github.com/votre-groupe/stage4all.git)
+git clone https://github.com/badtommy67/Projet-Web-Stage4All
 cd stage4all/site
 ```
 
