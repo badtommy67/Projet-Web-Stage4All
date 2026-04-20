@@ -146,7 +146,7 @@ Le projet suit une architecture **MVC stricte** :
 
 ```bash
 git clone https://github.com/badtommy67/Projet-Web-Stage4All
-cd stage4all/site
+cd Projet-Web-Stage4All/site
 ```
 
 ### 2. Installer les dépendances
